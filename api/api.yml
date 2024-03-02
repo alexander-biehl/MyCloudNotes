@@ -1,0 +1,64 @@
+openapi: 3.0.2
+info:
+  title: Swagger MyCloudNotes - OpenAPI 3.0
+
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  version: 1.0.11
+servers:
+  - url: https://todo.com/api
+paths:
+  /notes:
+    get:
+      summary: Get Notes
+      description: gets the list of all notes
+      # parameters: TODO
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Note"
+
+components:
+  schemas:
+    Note:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: 689b20ce-3939-4fe1-b4f9-10e390d6735a
+        content:
+          type: string
+          example: Make sure to get the groceries.
+    ApiResponse:
+      type: object
+      properties:
+        code:
+          type: integer
+          format: int32
+        message:
+          type: string
+    Error:
+      type: object
+      properties:
+        code:
+          type: integer
+          format: int32
+        message:
+          type: string
+
+  requestBodies:
+    Note:
+      description: note object
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Note"
+
+  # TODO securitySchemes:
