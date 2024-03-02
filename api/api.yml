@@ -23,6 +23,28 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/Note"
+    post:
+      summary: Create a new note
+      description: creates a new note
+      requestBody:
+        description: Create a new Note
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Note"
+      responses:
+        "201":
+          description: created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Note"
+        "200":
+          description: updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Note"
   /notes/{noteId}:
     get:
       summary: find note by ID.
@@ -53,6 +75,60 @@ paths:
           #       $ref: "#/components/schemas/Error"
         "404":
           description: no note found for Id
+    put:
+      summary: update note
+      description: update note
+      operationId: updateNoteById
+      parameters:
+        - name: noteId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        description: update or create note
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Note"
+      responses:
+        "200":
+          description: updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Note"
+        "201":
+          description: created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Note"
+        "400":
+          description: invalid Id
+        "422":
+          description: invalid content
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+    delete:
+      summary: Delete Note by ID
+      description: Delete Note
+      parameters:
+        - name: noteId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: success
+        "404":
+          description: Note not found
+
 components:
   schemas:
     Note:
