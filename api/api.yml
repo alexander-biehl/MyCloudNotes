@@ -23,7 +23,36 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/Note"
-
+  /notes/{noteId}:
+    get:
+      summary: find note by ID.
+      description: Returns a Note.
+      operationId: getNoteById
+      parameters:
+        - name: noteId
+          in: path
+          description: Id of the note to return
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Note"
+        "400":
+          description: invalid Id
+        "403":
+          description: Unauthorized
+          # content:
+          #   application/json:
+          #     schema:
+          #       $ref: "#/components/schemas/Error"
+        "404":
+          description: no note found for Id
 components:
   schemas:
     Note:
