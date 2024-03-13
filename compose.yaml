@@ -11,7 +11,6 @@ services:
   server:
     build:
       context: .
-    # entrypoint: [ '/bin/sh', '-c', 'export POSTGRES_PASSWORD=$$(cat /var/run/secrets/db-password) ; source /entrypoint.sh' ]
     ports:
       - 80:8080
     networks:
@@ -20,7 +19,8 @@ services:
       - db-password
     environment:
       - POSTGRES_DB=notes
-      - POSTGRES_PASSWORD=/run/secrets/db-password
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      # - POSTGRES_PASSWORD=alongpassword
 # The commented out section below is an example of how to define a PostgreSQL
 # database that your application can use. `depends_on` tells Docker Compose to
 # start the database before your application. The `db-data` volume persists the
@@ -51,17 +51,18 @@ services:
     networks:
       - backend
 
-  adminer:
-    image: adminer
-    container_name: pds_adminer
-    restart: always
-    ports: 
-      - 8081:8080
-    networks:
-      - backend
+  # adminer:
+  #   image: adminer
+  #   container_name: pds_adminer
+  #   restart: always
+  #   ports: 
+  #     - 8081:8080
+  #   networks:
+  #     - backend
 
 networks:
   backend:
+    driver: bridge
 volumes:
   db-data:
 secrets:
