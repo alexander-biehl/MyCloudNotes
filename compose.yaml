@@ -18,7 +18,7 @@ services:
     secrets:
       - db-password
     environment:
-      - POSTGRES_DB=notes
+      - POSTGRES_DB=mycloudnotes
       - POSTGRES_PASSWORD=${DB_PASSWORD}
 # The commented out section below is an example of how to define a PostgreSQL
 # database that your application can use. `depends_on` tells Docker Compose to
@@ -38,7 +38,7 @@ services:
     volumes:
       - db-data:/var/lib/postgresql/data
     environment:
-      - POSTGRES_DB=notes
+      - POSTGRES_DB=mycloudnotes
       - POSTGRES_PASSWORD_FILE=/run/secrets/db-password
     expose:
       - 5432
