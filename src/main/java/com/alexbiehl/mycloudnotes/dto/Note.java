@@ -16,12 +16,14 @@ public class Note {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
     private String content;
+    private String title;
 
     private Note() {
     }
 
-    public Note(UUID id, String content) {
+    public Note(UUID id, String title, String content) {
         this.id = id;
+        this.title = title;
         this.content = content;
     }
 
@@ -39,6 +41,14 @@ public class Note {
 
     public void setContent(String content) {
         this.content = content;
+    }
+
+    public String getTitle() {
+        return this.title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
     }
 
 }
