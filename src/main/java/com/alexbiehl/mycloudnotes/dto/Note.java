@@ -51,4 +51,18 @@ public class Note {
         this.title = title;
     }
 
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        builder.append("Note<id = ");
+        builder.append(this.id);
+        builder.append(" \n");
+        builder.append("title = ");
+        builder.append(this.title);
+        builder.append(" \n");
+        builder.append("content = ");
+        builder.append(this.content);
+        builder.append(" \n>");
+        return builder.toString();
+    }
 }

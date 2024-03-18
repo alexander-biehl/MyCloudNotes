@@ -4,20 +4,22 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.alexbiehl.mycloudnotes.dto.Note;
-import com.alexbiehl.mycloudnotes.repository.NotesRepository;
+import com.alexbiehl.mycloudnotes.service.NotesService;
 
 @RestController
+@RequestMapping("/notes")
 public class NotesController {
 
     @Autowired
-    NotesRepository repository;
+    NotesService notesService;
 
-    // @GetMapping("/notes")
-    // public List<Note> GetNotes() {
-    // List<Note> notes = repository.findAll();
-    // }
+    @GetMapping("/")
+    public List<Note> GetNotes() {
+        return notesService.getNotes();
+    }
 
 }
