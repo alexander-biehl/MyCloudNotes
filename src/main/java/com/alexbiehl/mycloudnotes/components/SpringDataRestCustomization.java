@@ -16,7 +16,7 @@ public class SpringDataRestCustomization implements RepositoryRestConfigurer {
     public void configureRepositoryRestConfiguration(RepositoryRestConfiguration config, CorsRegistry cors) {
         cors.addMapping("/**")
                 .allowedOriginPatterns("http://localhost:*")
-                .allowedOrigins("http://localhost:5173")
+                // .allowedOrigins("http://localhost:5173")
                 .allowedMethods("GET", "POST", "OPTIONS", "PUT")
                 .allowedHeaders("Content-Type", "Accept", "Origin", "Access-Control-Request-Method",
                         "Access-Control-Request-Headers")
