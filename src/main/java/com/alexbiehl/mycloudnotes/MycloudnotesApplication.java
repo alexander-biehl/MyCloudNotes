@@ -14,34 +14,34 @@ public class MycloudnotesApplication {
 		SpringApplication.run(MycloudnotesApplication.class, args);
 	}
 
-	// @Bean
-	// public WebMvcConfigurer corsConfigurer() {
-	// return new WebMvcConfigurer() {
-	// @Override
-	// public void addCorsMappings(@NonNull final CorsRegistry registry) {
-	// //
-	// registry.addMapping("/greeting-javaconfig").allowedOrigins("http://localhost:9000");
-	// // registry.addMapping("/notes").allowedOrigins("http://localhost:5173");
-	// registry.addMapping("/api/notes")
-	// .allowedOriginPatterns("http://localhost:*")
-	// .allowedOrigins("http://localhost:5173")
-	// .allowedMethods("GET", "POST", "OPTIONS", "PUT")
-	// .allowedHeaders("Content-Type", "Accept", "Origin",
-	// "Access-Control-Request-Method",
-	// "Access-Control-Request-Headers")
-	// .exposedHeaders("Access-Control-Allow-Origin",
-	// "Access-Control-Allow-Credentials");
-	// registry.addMapping("/**")
-	// .allowedOriginPatterns("http://localhost:*")
-	// .allowedOrigins("http://localhost:5173")
-	// .allowedMethods("GET", "POST", "OPTIONS", "PUT")
-	// .allowedHeaders("Content-Type", "Accept", "Origin",
-	// "Access-Control-Request-Method",
-	// "Access-Control-Request-Headers")
-	// .exposedHeaders("Access-Control-Allow-Origin",
-	// "Access-Control-Allow-Credentials");
-	// }
-	// };
-	// }
+	@Bean
+	public WebMvcConfigurer corsConfigurer() {
+		return new WebMvcConfigurer() {
+			@Override
+			public void addCorsMappings(@NonNull final CorsRegistry registry) {
+				//
+
+				// registry.addMapping("/notes").allowedOrigins("http://localhost:5173");
+				registry.addMapping("/notes")
+						.allowedOriginPatterns("http://localhost:*")
+						// .allowedOrigins("http://localhost:5173")
+						.allowedMethods("GET", "POST", "OPTIONS", "PUT")
+						.allowedHeaders("Content-Type", "Accept", "Origin",
+								"Access-Control-Request-Method",
+								"Access-Control-Request-Headers")
+						.exposedHeaders("Access-Control-Allow-Origin",
+								"Access-Control-Allow-Credentials");
+				// registry.addMapping("/**")
+				// .allowedOriginPatterns("http://localhost:*")
+				// .allowedOrigins("http://localhost:5173")
+				// .allowedMethods("GET", "POST", "OPTIONS", "PUT")
+				// .allowedHeaders("Content-Type", "Accept", "Origin",
+				// "Access-Control-Request-Method",
+				// "Access-Control-Request-Headers")
+				// .exposedHeaders("Access-Control-Allow-Origin",
+				// "Access-Control-Allow-Credentials");
+			}
+		};
+	}
 
 }

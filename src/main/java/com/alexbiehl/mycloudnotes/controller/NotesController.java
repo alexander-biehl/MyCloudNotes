@@ -17,7 +17,7 @@ public class NotesController {
     @Autowired
     NotesService notesService;
 
-    @GetMapping("/")
+    @GetMapping("")
     public List<Note> GetNotes() {
         return notesService.getNotes();
     }
