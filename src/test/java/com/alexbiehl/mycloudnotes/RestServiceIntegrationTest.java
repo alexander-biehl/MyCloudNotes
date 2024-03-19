@@ -15,6 +15,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
+import org.springframework.lang.NonNull;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
@@ -35,20 +36,19 @@ public class RestServiceIntegrationTest {
 
     @Test
     public void corsWithJavaconfig() {
-        logger.info("test starting ---------------------------------------------------------");
-        logger.info("Path: " + uri("/api/notes"));
-        ResponseEntity<Note> entity = this.restTemplate.exchange(
+        ResponseEntity<Note[]> entity = this.restTemplate.exchange(
                 RequestEntity.get(uri("/notes"))
                         .header(HttpHeaders.ORIGIN, "http://localhost:5173")
                         .header(HttpHeaders.CONTENT_TYPE, "application/json")
                         .build(),
-                Note.class);
+                Note[].class);
         assertEquals(HttpStatus.OK, entity.getStatusCode());
         assertEquals("http://localhost:5173",
                 entity.getHeaders().getAccessControlAllowOrigin());
     }
 
-    private URI uri(String path) {
+    @NonNull
+    private URI uri(@NonNull String path) {
         return restTemplate.getRestTemplate().getUriTemplateHandler().expand(path);
     }
 
