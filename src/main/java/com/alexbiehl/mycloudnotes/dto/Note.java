@@ -18,6 +18,7 @@ public class Note {
     private String content;
     private String title;
 
+    @SuppressWarnings("unused")
     private Note() {
     }
 

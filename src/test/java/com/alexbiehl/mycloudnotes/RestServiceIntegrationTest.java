@@ -26,6 +26,7 @@ import com.alexbiehl.mycloudnotes.dto.Note;
 @RunWith(SpringRunner.class)
 public class RestServiceIntegrationTest {
 
+    @SuppressWarnings("unused")
     private static final Logger logger = LoggerFactory.getLogger(RestServiceIntegrationTest.class);
 
     @Container
