@@ -1,9 +1,12 @@
 package com.alexbiehl.mycloudnotes.controller;
 
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.lang.NonNull;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -20,6 +23,11 @@ public class NotesController {
     @GetMapping("")
     public List<Note> GetNotes() {
         return notesService.getNotes();
+    }
+
+    @GetMapping("/{id}")
+    public Note getNoteById(@NonNull @PathVariable("id") UUID id) {
+        return notesService.getNoteById(id);
     }
 
 }

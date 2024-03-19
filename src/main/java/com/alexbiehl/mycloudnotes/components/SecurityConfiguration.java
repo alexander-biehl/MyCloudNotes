@@ -32,6 +32,11 @@ public class SecurityConfiguration {
                         .allowedMethods(allowedMethods)
                         .allowedOriginPatterns(allowedOriginPatterns)
                         .exposedHeaders(exposedHeaders);
+                registry.addMapping("/notes/**")
+                        .allowedHeaders(allowedHeaders)
+                        .allowedMethods(allowedMethods)
+                        .allowedOriginPatterns(allowedOriginPatterns)
+                        .exposedHeaders(exposedHeaders);
             }
         };
     }
