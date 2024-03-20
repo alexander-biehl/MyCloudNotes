@@ -38,7 +38,7 @@ public class RestServiceIntegrationTest {
     @Test
     public void corsWithJavaconfig() {
         ResponseEntity<Note[]> entity = this.restTemplate.exchange(
-                RequestEntity.get(uri("/notes"))
+                RequestEntity.get(TestUtils.uri(this.restTemplate, "/notes"))
                         .header(HttpHeaders.ORIGIN, "http://localhost:5173")
                         .header(HttpHeaders.CONTENT_TYPE, "application/json")
                         .build(),
@@ -46,11 +46,6 @@ public class RestServiceIntegrationTest {
         assertEquals(HttpStatus.OK, entity.getStatusCode());
         assertEquals("http://localhost:5173",
                 entity.getHeaders().getAccessControlAllowOrigin());
-    }
-
-    @NonNull
-    private URI uri(@NonNull String path) {
-        return restTemplate.getRestTemplate().getUriTemplateHandler().expand(path);
     }
 
 }

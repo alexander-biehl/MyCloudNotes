@@ -20,6 +20,7 @@ import org.springframework.lang.NonNull;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import com.alexbiehl.mycloudnotes.MycloudnotesApplication;
+import com.alexbiehl.mycloudnotes.TestUtils;
 
 @RunWith(SpringRunner.class)
 @EnableAutoConfiguration
@@ -35,7 +36,9 @@ public class HomeControllerTest {
     @Test
     public void testHealthCheck_withoutCors() {
         ResponseEntity<String> response = this.restTemplate.exchange(
-                RequestEntity.get(uri("/health-check")).build(), String.class);
+                RequestEntity.get(
+                        TestUtils.uri(this.restTemplate, "/health-check")).build(),
+                String.class);
 
         assertEquals(response.getStatusCode(), HttpStatus.OK);
         assertEquals(response.getBody(), "OK");
@@ -44,7 +47,7 @@ public class HomeControllerTest {
     @Test
     public void testHealthCheck_withCors() {
         ResponseEntity<String> response = this.restTemplate.exchange(
-                RequestEntity.get(uri("/health-check"))
+                RequestEntity.get(TestUtils.uri(this.restTemplate, "/health-check"))
                         .header(HttpHeaders.ORIGIN, "http://localhost:9000")
                         .build(),
                 String.class);
@@ -53,8 +56,4 @@ public class HomeControllerTest {
         assertEquals(response.getHeaders().getAccessControlAllowOrigin(), "http://localhost:9000");
     }
 
-    @NonNull
-    private URI uri(@NonNull String path) {
-        return restTemplate.getRestTemplate().getUriTemplateHandler().expand(path);
-    }
 }
