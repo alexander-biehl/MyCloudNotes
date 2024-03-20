@@ -16,7 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 
-import com.alexbiehl.mycloudnotes.dto.Note;
+import com.alexbiehl.mycloudnotes.model.Note;
 import com.alexbiehl.mycloudnotes.repository.NotesRepository;
 
 @RunWith(SpringRunner.class)

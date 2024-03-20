@@ -1,6 +1,8 @@
-package com.alexbiehl.mycloudnotes.dto;
+package com.alexbiehl.mycloudnotes.model;
 
 import java.util.UUID;
+
+import com.alexbiehl.mycloudnotes.dto.NoteDTO;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -65,5 +67,9 @@ public class Note {
         builder.append(this.content);
         builder.append(" \n>");
         return builder.toString();
+    }
+
+    public static Note from(NoteDTO note) {
+        return new Note(note.getId(), note.getTitle(), note.getContent());
     }
 }

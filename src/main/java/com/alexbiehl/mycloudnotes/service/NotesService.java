@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 
-import com.alexbiehl.mycloudnotes.dto.Note;
+import com.alexbiehl.mycloudnotes.model.Note;
 import com.alexbiehl.mycloudnotes.repository.NotesRepository;
 
 @Service
@@ -23,4 +23,13 @@ public class NotesService {
     public Note getNoteById(@NonNull UUID id) {
         return notesRepository.findById(id).orElseThrow();
     }
+
+    public boolean exists(@NonNull UUID id) {
+        return notesRepository.existsById(id);
+    }
+
+    public Note save(@NonNull Note newNote) {
+        return notesRepository.save(newNote);
+    }
+
 }

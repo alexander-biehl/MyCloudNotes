@@ -17,32 +17,32 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 
-import com.alexbiehl.mycloudnotes.dto.Note;
+import com.alexbiehl.mycloudnotes.model.Note;
 
 @SpringBootTest(classes = MycloudnotesApplication.class, webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @RunWith(SpringRunner.class)
 public class RestServiceIntegrationTest {
 
-    @SuppressWarnings("unused")
-    private static final Logger logger = LoggerFactory.getLogger(RestServiceIntegrationTest.class);
+        @SuppressWarnings("unused")
+        private static final Logger logger = LoggerFactory.getLogger(RestServiceIntegrationTest.class);
 
-    @Container
-    private static PostgreSQLContainer<TestPostgresContainer> container = TestPostgresContainer.getInstance();
+        @Container
+        private static PostgreSQLContainer<TestPostgresContainer> container = TestPostgresContainer.getInstance();
 
-    @Autowired
-    private TestRestTemplate restTemplate;
+        @Autowired
+        private TestRestTemplate restTemplate;
 
-    @Test
-    public void corsWithJavaconfig() {
-        ResponseEntity<Note[]> entity = this.restTemplate.exchange(
-                RequestEntity.get(TestUtils.uri(this.restTemplate, "/notes"))
-                        .header(HttpHeaders.ORIGIN, "http://localhost:5173")
-                        .header(HttpHeaders.CONTENT_TYPE, "application/json")
-                        .build(),
-                Note[].class);
-        assertEquals(HttpStatus.OK, entity.getStatusCode());
-        assertEquals("http://localhost:5173",
-                entity.getHeaders().getAccessControlAllowOrigin());
-    }
+        @Test
+        public void corsWithJavaconfig() {
+                ResponseEntity<Note[]> entity = this.restTemplate.exchange(
+                                RequestEntity.get(TestUtils.uri(this.restTemplate, "/notes"))
+                                                .header(HttpHeaders.ORIGIN, "http://localhost:5173")
+                                                .header(HttpHeaders.CONTENT_TYPE, "application/json")
+                                                .build(),
+                                Note[].class);
+                assertEquals(HttpStatus.OK, entity.getStatusCode());
+                assertEquals("http://localhost:5173",
+                                entity.getHeaders().getAccessControlAllowOrigin());
+        }
 
 }
