@@ -1,17 +1,10 @@
 package com.alexbiehl.mycloudnotes.controller;
 
-import java.util.Arrays;
-import java.util.List;
 import java.util.UUID;
 
-import org.apache.hc.client5.http.entity.UrlEncodedFormEntity;
-import org.apache.hc.core5.http.io.entity.EntityUtils;
-import org.apache.hc.core5.http.message.BasicNameValuePair;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -48,7 +41,7 @@ public class NotesControllerTests {
         mockMvc.perform(
                 MockMvcRequestBuilders.get("/notes")
                         .accept(MediaType.APPLICATION_JSON))
-                // .andDo(MockMvcResultHandlers.print())
+                .andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$[*]").isEmpty());
     }
@@ -66,7 +59,7 @@ public class NotesControllerTests {
         mockMvc.perform(
                 MockMvcRequestBuilders.get("/notes/" + id.toString())
                         .accept(MediaType.APPLICATION_JSON))
-                // .andDo(MockMvcResultHandlers.print())
+                .andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.id").value(note.getId().toString()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.title").value(note.getTitle()))
@@ -83,7 +76,7 @@ public class NotesControllerTests {
         mockMvc.perform(
                 MockMvcRequestBuilders.get("/notes/" + id.toString())
                         .accept(MediaType.APPLICATION_JSON))
-                // .andDo(MockMvcResultHandlers.print())
+                .andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().isNotFound());
     }
 

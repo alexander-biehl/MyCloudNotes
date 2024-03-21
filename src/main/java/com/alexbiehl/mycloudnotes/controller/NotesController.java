@@ -36,8 +36,12 @@ public class NotesController {
 
     @PostMapping("")
     public NoteDTO postNote(@NonNull @RequestBody NoteDTO noteDTO, HttpServletResponse response) {
-        LOGGER.info(String.format("NoteDTO: id: %s, title: %s, content: %s", noteDTO.getId(), noteDTO.getTitle(),
-                noteDTO.getContent()));
+        LOGGER.info(
+                String.format("POST NoteDTO: id: %s, title: %s, content: %s",
+                        noteDTO.getId(),
+                        noteDTO.getTitle(),
+                        noteDTO.getContent()));
+
         Note noteModel = Note.from(noteDTO);
         noteModel = notesService.save(noteModel);
         noteDTO.setId(noteModel.getId());
