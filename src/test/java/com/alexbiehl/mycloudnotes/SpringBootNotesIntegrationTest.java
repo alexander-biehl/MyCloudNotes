@@ -31,6 +31,7 @@ public class SpringBootNotesIntegrationTest {
     @Autowired
     private NotesRepository notesRepository;
 
+    @SuppressWarnings("null")
     @Test
     @Transactional
     public void givenNotesRepository_whenSaveAndRetrieveEntity_thenOK() {
