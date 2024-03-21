@@ -25,6 +25,7 @@ public class SecurityConfiguration {
     @Bean
     public WebMvcConfigurer corsConfigurer() {
         return new WebMvcConfigurer() {
+            @SuppressWarnings("null")
             @Override
             public void addCorsMappings(@NonNull final CorsRegistry registry) {
                 registry.addMapping("/notes")

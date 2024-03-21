@@ -34,8 +34,9 @@ public class NotesController {
     @Autowired
     NotesService notesService;
 
+    @SuppressWarnings("null")
     @PostMapping("")
-    public NoteDTO postNote(@NonNull @RequestBody NoteDTO noteDTO, HttpServletResponse response) {
+    public NoteDTO postNote(@NonNull @RequestBody NoteDTO noteDTO, final HttpServletResponse response) {
         LOGGER.info(
                 String.format("POST NoteDTO: id: %s, title: %s, content: %s",
                         noteDTO.getId(),
@@ -69,11 +70,12 @@ public class NotesController {
         return NoteDTO.from(note);
     }
 
+    @SuppressWarnings("null")
     @PutMapping("/{id}")
     public NoteDTO updateNote(
             @NonNull @PathVariable("id") UUID id,
             @NonNull @RequestBody NoteDTO updatedNote,
-            HttpServletResponse response) {
+            final HttpServletResponse response) {
         LOGGER.info("Calling UpdateNote with id: %s", id.toString());
 
         Note savedNote = Note.from(updatedNote);
@@ -89,8 +91,9 @@ public class NotesController {
             LOGGER.debug("Updating existing Note.");
             try {
                 savedNote = notesService.getNoteById(id);
-            } catch (NoSuchElementException nsex) {
-                LOGGER.error("Note was supposed to exist but was not found by ID.");
+            } catch (NoSuchElementException ex) {
+                LOGGER.error(
+                        String.format("Note was supposed to exist but was not found by ID. EX: %s", ex.getMessage()));
                 throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to locate Note by ID");
             }
             savedNote = notesService.save(savedNote);
