@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.lang.NonNull;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -102,6 +103,16 @@ public class NotesController {
             savedNote = notesService.save(savedNote);
             return updatedNote;
         }
+    }
+
+    @DeleteMapping(API.BY_ID)
+    public void deleteNote(@NonNull @PathVariable("id") UUID id) {
+        LOGGER.info("DeleteNote for id: %s", id.toString());
+        if (!notesService.exists(id)) {
+            LOGGER.warn("DeleteNOte for id %s does not exist", id.toString());
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Unable to find a note with the specified ID");
+        }
+        notesService.deleteById(id);
     }
 
 }

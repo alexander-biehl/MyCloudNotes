@@ -32,4 +32,7 @@ public class NotesService {
         return notesRepository.save(newNote);
     }
 
+    public void deleteById(@NonNull UUID id) {
+        notesRepository.deleteById(id);
+    }
 }

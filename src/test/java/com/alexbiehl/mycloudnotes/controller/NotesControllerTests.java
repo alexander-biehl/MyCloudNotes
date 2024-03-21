@@ -3,6 +3,7 @@ package com.alexbiehl.mycloudnotes.controller;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -154,5 +155,35 @@ public class NotesControllerTests {
                                 .andExpect(jsonPath("$.id").value(id.toString()))
                                 .andExpect(jsonPath("$.title").value(dto.getTitle()))
                                 .andExpect(jsonPath("$.content").value(dto.getContent()));
+        }
+
+        @SuppressWarnings("null")
+        @Test
+        public void testNoteExists_DeleteNote_thenOk() throws Exception {
+                // set up test data
+                UUID id = UUID.randomUUID();
+
+                // mock return values
+                Mockito.when(notesService.exists(id)).thenReturn(true);
+
+                // test
+                mockMvc.perform(delete("/notes/" + id.toString()))
+                                .andDo(print())
+                                .andExpect(status().isOk());
+        }
+
+        @SuppressWarnings("null")
+        @Test
+        public void testNoteDoesntExist_DeleteNote_thenError() throws Exception {
+                // set up test data
+                UUID id = UUID.randomUUID();
+
+                // mock results
+                Mockito.when(notesService.exists(id)).thenReturn(false);
+
+                // test
+                mockMvc.perform(delete("/notes/" + id.toString()))
+                                .andDo(print())
+                                .andExpect(status().isNotFound());
         }
 }
