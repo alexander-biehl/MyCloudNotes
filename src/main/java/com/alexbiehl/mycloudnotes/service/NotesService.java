@@ -21,7 +21,7 @@ public class NotesService {
     }
 
     public Note getNoteById(@NonNull UUID id) {
-        return notesRepository.findById(id).orElseThrow();
+        return notesRepository.getReferenceById(id);
     }
 
     public boolean exists(@NonNull UUID id) {
