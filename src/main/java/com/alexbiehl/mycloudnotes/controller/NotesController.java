@@ -1,7 +1,6 @@
 package com.alexbiehl.mycloudnotes.controller;
 
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -91,15 +90,6 @@ public class NotesController {
             return updatedNote;
         } else {
             LOGGER.debug("Updating existing Note.");
-            // try {
-            // savedNote = notesService.getNoteById(id);
-            // } catch (NoSuchElementException ex) {
-            // LOGGER.error(
-            // String.format("Note was supposed to exist but was not found by ID. EX: %s",
-            // ex.getMessage()));
-            // throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Failed
-            // to locate Note by ID");
-            // }
             savedNote = notesService.save(savedNote);
             return updatedNote;
         }
@@ -109,7 +99,7 @@ public class NotesController {
     public void deleteNote(@NonNull @PathVariable("id") UUID id) {
         LOGGER.info("DeleteNote for id: %s", id.toString());
         if (!notesService.exists(id)) {
-            LOGGER.warn("DeleteNOte for id %s does not exist", id.toString());
+            LOGGER.warn("DeleteNote for id %s does not exist", id.toString());
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Unable to find a note with the specified ID");
         }
         notesService.deleteById(id);
