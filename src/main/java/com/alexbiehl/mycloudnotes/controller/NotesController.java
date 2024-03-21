@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.alexbiehl.mycloudnotes.api.API;
 import com.alexbiehl.mycloudnotes.dto.NoteDTO;
 import com.alexbiehl.mycloudnotes.model.Note;
 import com.alexbiehl.mycloudnotes.service.NotesService;
@@ -26,7 +27,7 @@ import com.alexbiehl.mycloudnotes.service.NotesService;
 import jakarta.servlet.http.HttpServletResponse;
 
 @RestController
-@RequestMapping("/notes")
+@RequestMapping(API.NOTES)
 public class NotesController {
 
     private static Logger LOGGER = LoggerFactory.getLogger(NotesController.class);
@@ -59,7 +60,7 @@ public class NotesController {
                 .collect(Collectors.toList());
     }
 
-    @GetMapping("/{id}")
+    @GetMapping(API.BY_ID)
     public NoteDTO getNoteById(@NonNull @PathVariable("id") UUID id) {
         LOGGER.info("Calling GetNoteById with id: %s", id);
         Note note = notesService.getNoteById(id);
@@ -71,7 +72,7 @@ public class NotesController {
     }
 
     @SuppressWarnings("null")
-    @PutMapping("/{id}")
+    @PutMapping(API.BY_ID)
     public NoteDTO updateNote(
             @NonNull @PathVariable("id") UUID id,
             @NonNull @RequestBody NoteDTO updatedNote,

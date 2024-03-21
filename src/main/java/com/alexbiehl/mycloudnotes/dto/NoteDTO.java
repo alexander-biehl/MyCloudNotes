@@ -42,6 +42,21 @@ public class NoteDTO {
         this.content = content;
     }
 
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        builder.append("Note<id = ");
+        builder.append(this.id);
+        builder.append(" \n");
+        builder.append("title = ");
+        builder.append(this.title);
+        builder.append(" \n");
+        builder.append("content = ");
+        builder.append(this.content);
+        builder.append(" \n>");
+        return builder.toString();
+    }
+
     public static NoteDTO from(@NonNull Note note) {
         return new NoteDTO(note.getId(), note.getTitle(), note.getContent());
     }
