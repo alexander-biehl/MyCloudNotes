@@ -1,5 +1,12 @@
 package com.alexbiehl.mycloudnotes.controller;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
@@ -12,9 +19,6 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import com.alexbiehl.mycloudnotes.MycloudnotesApplication;
 import com.alexbiehl.mycloudnotes.dto.NoteDTO;
@@ -39,11 +43,11 @@ public class NotesControllerTests {
         @Test
         public void withoutData_testGetNotesEndpoint() throws Exception {
                 mockMvc.perform(
-                                MockMvcRequestBuilders.get("/notes")
+                                get("/notes")
                                                 .accept(MediaType.APPLICATION_JSON))
-                                .andDo(MockMvcResultHandlers.print())
-                                .andExpect(MockMvcResultMatchers.status().isOk())
-                                .andExpect(MockMvcResultMatchers.jsonPath("$[*]").isEmpty());
+                                .andDo(print())
+                                .andExpect(status().isOk())
+                                .andExpect(jsonPath("$[*]").isEmpty());
         }
 
         @SuppressWarnings("null")
@@ -58,13 +62,13 @@ public class NotesControllerTests {
 
                 // perform the test
                 mockMvc.perform(
-                                MockMvcRequestBuilders.get("/notes/" + id.toString())
+                                get("/notes/" + id.toString())
                                                 .accept(MediaType.APPLICATION_JSON))
-                                .andDo(MockMvcResultHandlers.print())
-                                .andExpect(MockMvcResultMatchers.status().isOk())
-                                .andExpect(MockMvcResultMatchers.jsonPath("$.id").value(note.getId().toString()))
-                                .andExpect(MockMvcResultMatchers.jsonPath("$.title").value(note.getTitle()))
-                                .andExpect(MockMvcResultMatchers.jsonPath("$.content").value(note.getContent()));
+                                .andDo(print())
+                                .andExpect(status().isOk())
+                                .andExpect(jsonPath("$.id").value(note.getId().toString()))
+                                .andExpect(jsonPath("$.title").value(note.getTitle()))
+                                .andExpect(jsonPath("$.content").value(note.getContent()));
         }
 
         @SuppressWarnings("null")
@@ -76,10 +80,10 @@ public class NotesControllerTests {
                 Mockito.when(notesService.getNoteById(id)).thenReturn(null);
 
                 mockMvc.perform(
-                                MockMvcRequestBuilders.get("/notes/" + id.toString())
+                                get("/notes/" + id.toString())
                                                 .accept(MediaType.APPLICATION_JSON))
-                                .andDo(MockMvcResultHandlers.print())
-                                .andExpect(MockMvcResultMatchers.status().isNotFound());
+                                .andDo(print())
+                                .andExpect(status().isNotFound());
         }
 
         @SuppressWarnings("null")
@@ -95,12 +99,60 @@ public class NotesControllerTests {
 
                 // perform test
                 mockMvc.perform(
-                                MockMvcRequestBuilders.post("/notes")
+                                post("/notes")
                                                 .contentType(MediaType.APPLICATION_JSON)
                                                 .accept(MediaType.APPLICATION_JSON)
                                                 .content(objectMapper.writeValueAsString(testNote)))
-                                .andDo(MockMvcResultHandlers.print())
-                                .andExpect(MockMvcResultMatchers.status().isCreated())
-                                .andExpect(MockMvcResultMatchers.jsonPath("$.id").exists());
+                                .andDo(print())
+                                .andExpect(status().isCreated())
+                                .andExpect(jsonPath("$.id").exists());
+        }
+
+        @SuppressWarnings("null")
+        @Test
+        public void testNoteDoesntExists_PutNote_andOk() throws Exception {
+                // set up test data
+                UUID id = UUID.randomUUID();
+                NoteDTO dto = new NoteDTO(id, "New Note", "Note Content.");
+                Note returnNote = Note.from(dto);
+
+                // mock return values
+                Mockito.when(notesService.exists(id)).thenReturn(false);
+                Mockito.when(notesService.save(Mockito.any(Note.class))).thenReturn(returnNote);
+
+                mockMvc.perform(
+                                put("/notes/" + id.toString())
+                                                .contentType(MediaType.APPLICATION_JSON)
+                                                .accept(MediaType.APPLICATION_JSON)
+                                                .content(objectMapper.writeValueAsString(dto)))
+                                .andDo(print())
+                                .andExpect(status().isCreated())
+                                .andExpect(jsonPath("$.id").value(id.toString()))
+                                .andExpect(jsonPath("$.title").value(dto.getTitle()))
+                                .andExpect(jsonPath("$.content").value(dto.getContent()));
+        }
+
+        @SuppressWarnings("null")
+        @Test
+        public void testNoteExists_PutNote_thenOk() throws Exception {
+                // set up test data
+                UUID id = UUID.randomUUID();
+                NoteDTO dto = new NoteDTO(id, "New Note", "Content.");
+                Note returnNote = Note.from(dto);
+
+                // mock return values
+                Mockito.when(notesService.exists(id)).thenReturn(true);
+                Mockito.when(notesService.save(Mockito.any(Note.class))).thenReturn(returnNote);
+
+                mockMvc.perform(
+                                put("/notes/" + id.toString())
+                                                .contentType(MediaType.APPLICATION_JSON)
+                                                .accept(MediaType.APPLICATION_JSON)
+                                                .content(objectMapper.writeValueAsString(dto)))
+                                .andDo(print())
+                                .andExpect(status().isOk())
+                                .andExpect(jsonPath("$.id").value(id.toString()))
+                                .andExpect(jsonPath("$.title").value(dto.getTitle()))
+                                .andExpect(jsonPath("$.content").value(dto.getContent()));
         }
 }

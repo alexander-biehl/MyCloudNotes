@@ -90,13 +90,15 @@ public class NotesController {
             return updatedNote;
         } else {
             LOGGER.debug("Updating existing Note.");
-            try {
-                savedNote = notesService.getNoteById(id);
-            } catch (NoSuchElementException ex) {
-                LOGGER.error(
-                        String.format("Note was supposed to exist but was not found by ID. EX: %s", ex.getMessage()));
-                throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to locate Note by ID");
-            }
+            // try {
+            // savedNote = notesService.getNoteById(id);
+            // } catch (NoSuchElementException ex) {
+            // LOGGER.error(
+            // String.format("Note was supposed to exist but was not found by ID. EX: %s",
+            // ex.getMessage()));
+            // throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Failed
+            // to locate Note by ID");
+            // }
             savedNote = notesService.save(savedNote);
             return updatedNote;
         }
