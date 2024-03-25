@@ -12,6 +12,8 @@ public class NoteDTO {
     private String title;
     private String content;
 
+    public NoteDTO() {}
+
     public NoteDTO(UUID id, String title, String content) {
         this.id = id;
         this.title = title;

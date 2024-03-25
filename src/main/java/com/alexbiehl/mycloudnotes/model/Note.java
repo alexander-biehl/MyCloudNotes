@@ -21,7 +21,7 @@ public class Note {
     private String title;
 
     @SuppressWarnings("unused")
-    private Note() {
+    public Note() {
     }
 
     public Note(UUID id, String title, String content) {
