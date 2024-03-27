@@ -62,10 +62,10 @@ public class NotesController {
 
     @GetMapping(API.BY_ID)
     public NoteDTO getNoteById(@NonNull @PathVariable("id") UUID id) {
-        LOGGER.info("Calling GetNoteById with id: %s", id);
+        LOGGER.info(String.format("Calling GetNoteById with id: %s", id.toString()));
         Note note = notesService.getNoteById(id);
         if (note == null) {
-            LOGGER.warn("Unable to locate Note Object for ID: %s", id);
+            LOGGER.warn(String.format("Unable to locate Note Object for ID: %s", id.toString()));
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Note not found.");
         }
         return NoteDTO.from(note);
@@ -77,7 +77,7 @@ public class NotesController {
             @NonNull @PathVariable("id") UUID id,
             @NonNull @RequestBody NoteDTO updatedNote,
             final HttpServletResponse response) {
-        LOGGER.info("Calling UpdateNote with id: %s", id.toString());
+        LOGGER.info(String.format("Calling UpdateNote with id: %s", id.toString()));
 
         Note savedNote = Note.from(updatedNote);
         // If the note does not exist, we are creating a new one and thus need to return
@@ -97,9 +97,9 @@ public class NotesController {
 
     @DeleteMapping(API.BY_ID)
     public void deleteNote(@NonNull @PathVariable("id") UUID id) {
-        LOGGER.info("DeleteNote for id: %s", id.toString());
+        LOGGER.info(String.format("DeleteNote for id: %s", id.toString()));
         if (!notesService.exists(id)) {
-            LOGGER.warn("DeleteNote for id %s does not exist", id.toString());
+            LOGGER.warn(String.format("DeleteNote for id %s does not exist", id.toString()));
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Unable to find a note with the specified ID");
         }
         notesService.deleteById(id);
