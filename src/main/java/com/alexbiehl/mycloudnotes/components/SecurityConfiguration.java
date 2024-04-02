@@ -1,13 +1,21 @@
 package com.alexbiehl.mycloudnotes.components;
 
+import com.alexbiehl.mycloudnotes.security.UserDetailsServiceImpl;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.lang.NonNull;
+import org.springframework.security.config.Customizer;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
+@EnableWebSecurity
 public class SecurityConfiguration {
 
     @Value("${cors.allowedMethods}")
@@ -46,4 +54,28 @@ public class SecurityConfiguration {
             }
         };
     }
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder(10);
+    }
+
+    @Bean
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        http
+                .authorizeHttpRequests(authorizationManagerRequestMatcherRegistry ->
+                        authorizationManagerRequestMatcherRegistry
+                                .requestMatchers("/user**").permitAll()
+                                .anyRequest().authenticated())
+                // specify basic auth
+                .httpBasic(Customizer.withDefaults())
+                // exclude CORS pre-flight checks from auth
+                .cors(Customizer.withDefaults());
+        return http.build();
+    }
+
+//    @Bean
+//    public UserDetailsServiceImpl userDetailsService() {
+//        return new UserDetailsServiceImpl();
+//    }
 }
