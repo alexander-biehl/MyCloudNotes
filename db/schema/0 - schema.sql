@@ -6,7 +6,7 @@
 
 CREATE TABLE IF NOT EXISTS users (
     id uuid DEFAULT gen_random_uuid(),
-    username varchar(50) NOT NULL,
+    username varchar(50) NOT NULL UNIQUE,
     password varchar(500) NOT NULL,
     active boolean DEFAULT true NOT NULL,
     PRIMARY KEY (id)
@@ -22,7 +22,7 @@ CREATE TABLE IF NOT EXISTS notes (
 
 CREATE TABLE IF NOT EXISTS roles (
     id uuid DEFAULT gen_random_uuid(),
-    name varchar(32) NOT NULL,
+    name varchar(32) NOT NULL UNIQUE,
     PRIMARY KEY (id)
 );
 

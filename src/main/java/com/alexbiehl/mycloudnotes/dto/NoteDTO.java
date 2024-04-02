@@ -9,13 +9,15 @@ import com.alexbiehl.mycloudnotes.model.Note;
 public class NoteDTO {
 
     private UUID id;
+    private UUID user_id;
     private String title;
     private String content;
 
     public NoteDTO() {}
 
-    public NoteDTO(UUID id, String title, String content) {
+    public NoteDTO(UUID id, UUID user_id, String title, String content) {
         this.id = id;
+        this.user_id = user_id;
         this.title = title;
         this.content = content;
     }
@@ -44,6 +46,14 @@ public class NoteDTO {
         this.content = content;
     }
 
+    public UUID getUserId() {
+        return user_id;
+    }
+
+    public void setUserId(UUID user_id) {
+        this.user_id = user_id;
+    }
+
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
@@ -60,6 +70,6 @@ public class NoteDTO {
     }
 
     public static NoteDTO from(@NonNull Note note) {
-        return new NoteDTO(note.getId(), note.getTitle(), note.getContent());
+        return new NoteDTO(note.getId(), note.getUserId(), note.getTitle(), note.getContent());
     }
 }
