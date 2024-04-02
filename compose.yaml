@@ -37,6 +37,7 @@ services:
       - db-password
     volumes:
       - db-data:/var/lib/postgresql/data
+      - ./db/schema:/docker-entrypoint-initdb.d/
     environment:
       - POSTGRES_DB=mycloudnotes
       - POSTGRES_PASSWORD_FILE=/run/secrets/db-password
