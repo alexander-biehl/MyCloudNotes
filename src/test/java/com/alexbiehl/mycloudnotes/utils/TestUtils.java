@@ -1,4 +1,4 @@
-package com.alexbiehl.mycloudnotes;
+package com.alexbiehl.mycloudnotes.utils;
 
 import java.net.URI;
 import java.util.UUID;

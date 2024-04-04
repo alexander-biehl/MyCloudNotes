@@ -1,5 +1,6 @@
-package com.alexbiehl.mycloudnotes;
+package com.alexbiehl.mycloudnotes.integration;
 
+import com.alexbiehl.mycloudnotes.utils.TestPostgresContainer;
 import com.alexbiehl.mycloudnotes.model.Note;
 import com.alexbiehl.mycloudnotes.model.User;
 import com.alexbiehl.mycloudnotes.repository.NotesRepository;

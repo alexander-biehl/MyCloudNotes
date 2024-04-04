@@ -1,8 +1,9 @@
-package com.alexbiehl.mycloudnotes.controller;
+package com.alexbiehl.mycloudnotes.integration;
 
 import static org.junit.Assert.assertEquals;
 
-import com.alexbiehl.mycloudnotes.TestPostgresContainer;
+import com.alexbiehl.mycloudnotes.utils.TestPostgresContainer;
+import com.alexbiehl.mycloudnotes.utils.TestUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +19,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import com.alexbiehl.mycloudnotes.MycloudnotesApplication;
-import com.alexbiehl.mycloudnotes.TestUtils;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;

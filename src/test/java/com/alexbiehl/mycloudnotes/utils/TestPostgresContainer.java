@@ -1,4 +1,4 @@
-package com.alexbiehl.mycloudnotes;
+package com.alexbiehl.mycloudnotes.utils;
 
 import org.testcontainers.containers.PostgreSQLContainer;
 

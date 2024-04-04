@@ -1,5 +1,6 @@
 package com.alexbiehl.mycloudnotes.controller;
 
+import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -10,29 +11,28 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.util.UUID;
 
-import com.alexbiehl.mycloudnotes.TestUtils;
+import com.alexbiehl.mycloudnotes.utils.TestUtils;
 import com.alexbiehl.mycloudnotes.model.User;
 import org.junit.jupiter.api.Test;
-import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
-import com.alexbiehl.mycloudnotes.MycloudnotesApplication;
 import com.alexbiehl.mycloudnotes.dto.NoteDTO;
 import com.alexbiehl.mycloudnotes.model.Note;
 import com.alexbiehl.mycloudnotes.service.NotesService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-@RunWith(SpringRunner.class)
-@SpringBootTest(classes = { MycloudnotesApplication.class })
-@AutoConfigureMockMvc
+// use @WebMvcTest so we are not loading the whole application context
+@WebMvcTest(controllers = NotesController.class)
+// use addFilters = False so security filters don't get loaded
+@AutoConfigureMockMvc(addFilters = false)
 public class NotesControllerTests {
+
 
         @Autowired
         private MockMvc mockMvc;
@@ -71,7 +71,7 @@ public class NotesControllerTests {
                                 .andDo(print())
                                 .andExpect(status().isOk())
                                 .andExpect(jsonPath("$.id").value(note.getId().toString()))
-                                .andExpect(jsonPath("$.user").value(note.getUser().getId().toString()))
+                                .andExpect(jsonPath("$.user.id").value(note.getUser().getId().toString()))
                                 .andExpect(jsonPath("$.title").value(note.getTitle()))
                                 .andExpect(jsonPath("$.content").value(note.getContent()));
         }
@@ -135,7 +135,7 @@ public class NotesControllerTests {
                                 .andDo(print())
                                 .andExpect(status().isCreated())
                                 .andExpect(jsonPath("$.id").value(id.toString()))
-                                .andExpect(jsonPath("$.user").value(user.getId().toString()))
+                                .andExpect(jsonPath("$.user.id").value(user.getId().toString()))
                                 .andExpect(jsonPath("$.title").value(dto.getTitle()))
                                 .andExpect(jsonPath("$.content").value(dto.getContent()));
         }
@@ -161,7 +161,7 @@ public class NotesControllerTests {
                                 .andDo(print())
                                 .andExpect(status().isOk())
                                 .andExpect(jsonPath("$.id").value(id.toString()))
-                                .andExpect(jsonPath("$.user").value(user.getId().toString()))
+                                .andExpect(jsonPath("$.user.id").value(user.getId().toString()))
                                 .andExpect(jsonPath("$.title").value(dto.getTitle()))
                                 .andExpect(jsonPath("$.content").value(dto.getContent()));
         }
