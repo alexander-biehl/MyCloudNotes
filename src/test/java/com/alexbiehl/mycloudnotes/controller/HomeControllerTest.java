@@ -2,6 +2,7 @@ package com.alexbiehl.mycloudnotes.controller;
 
 import static org.junit.Assert.assertEquals;
 
+import com.alexbiehl.mycloudnotes.TestPostgresContainer;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,11 +19,18 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import com.alexbiehl.mycloudnotes.MycloudnotesApplication;
 import com.alexbiehl.mycloudnotes.TestUtils;
+import org.testcontainers.containers.PostgreSQLContainer;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
 @RunWith(SpringRunner.class)
 @EnableAutoConfiguration
 @SpringBootTest(classes = { MycloudnotesApplication.class }, webEnvironment = WebEnvironment.RANDOM_PORT)
+@Testcontainers
 public class HomeControllerTest {
+
+        @Container
+        public static PostgreSQLContainer<TestPostgresContainer> postgreSQLContainer = TestPostgresContainer.getInstance();
 
         @LocalServerPort
         private int port;

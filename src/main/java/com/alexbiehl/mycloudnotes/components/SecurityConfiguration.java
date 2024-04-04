@@ -74,6 +74,7 @@ public class SecurityConfiguration {
                 .authorizeHttpRequests(authorizationManagerRequestMatcherRegistry ->
                         authorizationManagerRequestMatcherRegistry
                                 .requestMatchers("/user**").permitAll()
+                                .requestMatchers("/health-check").permitAll()
                                 .anyRequest().authenticated())
                 // specify basic auth
                 .httpBasic(Customizer.withDefaults());

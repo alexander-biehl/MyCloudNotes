@@ -4,12 +4,10 @@ import com.alexbiehl.mycloudnotes.model.Note;
 import com.alexbiehl.mycloudnotes.model.User;
 import com.alexbiehl.mycloudnotes.repository.NotesRepository;
 import com.alexbiehl.mycloudnotes.repository.UserRepository;
-import org.junit.ClassRule;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
 import org.testcontainers.containers.PostgreSQLContainer;
@@ -26,7 +24,6 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 @Testcontainers
 public class SpringBootNotesIntegrationTest {
 
-    @ClassRule
     @Container
     public static PostgreSQLContainer<TestPostgresContainer> postgreSQLContainer = TestPostgresContainer.getInstance();
 
