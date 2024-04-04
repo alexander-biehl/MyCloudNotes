@@ -2,6 +2,7 @@ package com.alexbiehl.mycloudnotes.dto;
 
 import java.util.UUID;
 
+import com.alexbiehl.mycloudnotes.model.User;
 import org.springframework.lang.NonNull;
 
 import com.alexbiehl.mycloudnotes.model.Note;
@@ -9,15 +10,15 @@ import com.alexbiehl.mycloudnotes.model.Note;
 public class NoteDTO {
 
     private UUID id;
-    private UUID user_id;
+    private User user;
     private String title;
     private String content;
 
     public NoteDTO() {}
 
-    public NoteDTO(UUID id, UUID user_id, String title, String content) {
+    public NoteDTO(UUID id, User user, String title, String content) {
         this.id = id;
-        this.user_id = user_id;
+        this.user = user;
         this.title = title;
         this.content = content;
     }
@@ -46,12 +47,12 @@ public class NoteDTO {
         this.content = content;
     }
 
-    public UUID getUserId() {
-        return user_id;
+    public User getUser() {
+        return user;
     }
 
-    public void setUserId(UUID user_id) {
-        this.user_id = user_id;
+    public void setUser(User user) {
+        this.user = user;
     }
 
     @Override
@@ -70,6 +71,6 @@ public class NoteDTO {
     }
 
     public static NoteDTO from(@NonNull Note note) {
-        return new NoteDTO(note.getId(), note.getUserId(), note.getTitle(), note.getContent());
+        return new NoteDTO(note.getId(), note.getUser(), note.getTitle(), note.getContent());
     }
 }

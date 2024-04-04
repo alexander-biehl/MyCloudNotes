@@ -10,6 +10,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.util.UUID;
 
+import com.alexbiehl.mycloudnotes.TestUtils;
+import com.alexbiehl.mycloudnotes.model.User;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
@@ -56,7 +58,8 @@ public class NotesControllerTests {
         public void withData_testGetNoteEndpoint() throws Exception {
                 // Define sample data
                 UUID id = UUID.randomUUID();
-                Note note = new Note(id, "TestNote", "Test note content.");
+                User user = TestUtils.generateUser();
+                Note note = new Note(id, user, "TestNote", "Test note content.");
 
                 // Mock the Service behaviour
                 Mockito.when(notesService.getNoteById(id)).thenReturn(note);
@@ -68,6 +71,7 @@ public class NotesControllerTests {
                                 .andDo(print())
                                 .andExpect(status().isOk())
                                 .andExpect(jsonPath("$.id").value(note.getId().toString()))
+                                .andExpect(jsonPath("$.user").value(note.getUser().getId().toString()))
                                 .andExpect(jsonPath("$.title").value(note.getTitle()))
                                 .andExpect(jsonPath("$.content").value(note.getContent()));
         }
@@ -91,7 +95,8 @@ public class NotesControllerTests {
         @Test
         public void testPostNote_andOk() throws Exception {
                 // set up test data
-                NoteDTO testNote = new NoteDTO(null, "Test Note", "Note Content.");
+                User user = TestUtils.generateUser();
+                NoteDTO testNote = new NoteDTO(null, user, "Test Note", "Note Content.");
                 Note toReturnNote = Note.from(testNote);
                 toReturnNote.setId(UUID.randomUUID());
 
@@ -114,7 +119,8 @@ public class NotesControllerTests {
         public void testNoteDoesntExists_PutNote_andOk() throws Exception {
                 // set up test data
                 UUID id = UUID.randomUUID();
-                NoteDTO dto = new NoteDTO(id, "New Note", "Note Content.");
+                User user = TestUtils.generateUser();
+                NoteDTO dto = new NoteDTO(id, user, "New Note", "Note Content.");
                 Note returnNote = Note.from(dto);
 
                 // mock return values
@@ -129,6 +135,7 @@ public class NotesControllerTests {
                                 .andDo(print())
                                 .andExpect(status().isCreated())
                                 .andExpect(jsonPath("$.id").value(id.toString()))
+                                .andExpect(jsonPath("$.user").value(user.getId().toString()))
                                 .andExpect(jsonPath("$.title").value(dto.getTitle()))
                                 .andExpect(jsonPath("$.content").value(dto.getContent()));
         }
@@ -138,7 +145,8 @@ public class NotesControllerTests {
         public void testNoteExists_PutNote_thenOk() throws Exception {
                 // set up test data
                 UUID id = UUID.randomUUID();
-                NoteDTO dto = new NoteDTO(id, "New Note", "Content.");
+                User user = TestUtils.generateUser();
+                NoteDTO dto = new NoteDTO(id, user, "New Note", "Content.");
                 Note returnNote = Note.from(dto);
 
                 // mock return values
@@ -153,6 +161,7 @@ public class NotesControllerTests {
                                 .andDo(print())
                                 .andExpect(status().isOk())
                                 .andExpect(jsonPath("$.id").value(id.toString()))
+                                .andExpect(jsonPath("$.user").value(user.getId().toString()))
                                 .andExpect(jsonPath("$.title").value(dto.getTitle()))
                                 .andExpect(jsonPath("$.content").value(dto.getContent()));
         }

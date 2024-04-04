@@ -1,2 +1,19 @@
 -- INSERT INTO notes(title, content) values ('Welcome', 'Hello World!');
-INSERT INTO users(username, password) values ('alex.biehl', '$2y$10$dC4MvJ.KzdhhYC4wJQrPiu4abigd7T6gakWN4FcPBpxIKwOIboOQK');
+
+--WITH insertedid AS (
+--    INSERT INTO
+--        users(username, password)
+--        values
+--        ('alex.biehl', '$2y$10$dC4MvJ.KzdhhYC4wJQrPiu4abigd7T6gakWN4FcPBpxIKwOIboOQK')
+--    RETURNING id),
+--    role_user_id AS (
+--        INSERT INTO
+--            roles(name) values ('ROLE_USER')
+--        RETURNING id),
+--    role_admin_id AS (
+--        INSERT INTO
+--            roles(name) values ('ROLE_ADMIN')
+--        RETURNING id)
+--
+--INSERT INTO user_roles(user_id, role_id) (SELECT id from insertedid, select id from role_user_id);
+--INSERT INTO user_roles(user_id, role_id) SELECT * from insertedid, role_admin_id;

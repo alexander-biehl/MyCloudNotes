@@ -51,6 +51,11 @@ public class SecurityConfiguration {
                         .allowedMethods(allowedMethods)
                         .allowedOriginPatterns(allowedOriginPatterns)
                         .exposedHeaders(exposedHeaders);
+                registry.addMapping("/user**")
+                        .allowedHeaders(allowedHeaders)
+                        .allowedMethods(allowedMethods)
+                        .allowedOriginPatterns(allowedOriginPatterns)
+                        .exposedHeaders(exposedHeaders);
             }
         };
     }
@@ -63,19 +68,20 @@ public class SecurityConfiguration {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
+
+                // exclude CORS pre-flight checks from auth
+                .cors(Customizer.withDefaults())
                 .authorizeHttpRequests(authorizationManagerRequestMatcherRegistry ->
                         authorizationManagerRequestMatcherRegistry
                                 .requestMatchers("/user**").permitAll()
                                 .anyRequest().authenticated())
                 // specify basic auth
-                .httpBasic(Customizer.withDefaults())
-                // exclude CORS pre-flight checks from auth
-                .cors(Customizer.withDefaults());
+                .httpBasic(Customizer.withDefaults());
         return http.build();
     }
 
-//    @Bean
-//    public UserDetailsServiceImpl userDetailsService() {
-//        return new UserDetailsServiceImpl();
-//    }
+    @Bean
+    public UserDetailsServiceImpl userDetailsService() {
+        return new UserDetailsServiceImpl();
+    }
 }

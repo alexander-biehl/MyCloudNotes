@@ -14,7 +14,8 @@ public class Note {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
     @OneToOne
-    private UUID user_id;
+    @JoinColumn(name = "user_id", referencedColumnName = "id")
+    private User user;
     private String content;
     private String title;
 
@@ -22,9 +23,9 @@ public class Note {
     public Note() {
     }
 
-    public Note(UUID id, UUID user_id, String title, String content) {
+    public Note(UUID id, User user, String title, String content) {
         this.id = id;
-        this.user_id = user_id;
+        this.user = user;
         this.title = title;
         this.content = content;
     }
@@ -53,13 +54,6 @@ public class Note {
         this.title = title;
     }
 
-    public UUID getUserId() {
-        return user_id;
-    }
-
-    public void setUserId(UUID user_id) {
-        this.user_id = user_id;
-    }
 
     @Override
     public boolean equals(Object o) {
@@ -67,7 +61,7 @@ public class Note {
         if (!(o instanceof Note note)) return false;
 
         if (!getId().equals(note.getId())) return false;
-        if (!user_id.equals(note.user_id)) return false;
+        if (!user.equals(note.user)) return false;
         if (getContent() != null ? !getContent().equals(note.getContent()) : note.getContent() != null) return false;
         return getTitle().equals(note.getTitle());
     }
@@ -75,10 +69,18 @@ public class Note {
     @Override
     public int hashCode() {
         int result = getId().hashCode();
-        result = 31 * result + user_id.hashCode();
+        result = 31 * result + user.hashCode();
         result = 31 * result + (getContent() != null ? getContent().hashCode() : 0);
         result = 31 * result + getTitle().hashCode();
         return result;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 
     @Override
@@ -88,7 +90,7 @@ public class Note {
         builder.append(this.id);
         builder.append(" \n");
         builder.append("userID = ");
-        builder.append(this.user_id);
+        builder.append(this.user);
         builder.append(" \n");
         builder.append("title = ");
         builder.append(this.title);
@@ -100,6 +102,6 @@ public class Note {
     }
 
     public static Note from(NoteDTO note) {
-        return new Note(note.getId(), note.getUserId(), note.getTitle(), note.getContent());
+        return new Note(note.getId(), note.getUser(), note.getTitle(), note.getContent());
     }
 }
