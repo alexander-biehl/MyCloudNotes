@@ -1,11 +1,9 @@
 package com.alexbiehl.mycloudnotes.integration;
 
-import static org.junit.Assert.assertEquals;
-
 import com.alexbiehl.mycloudnotes.utils.TestPostgresContainer;
 import com.alexbiehl.mycloudnotes.utils.TestUtils;
+
 import org.junit.jupiter.api.Test;
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -16,12 +14,13 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import com.alexbiehl.mycloudnotes.MycloudnotesApplication;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @EnableAutoConfiguration
 @SpringBootTest(classes = { MycloudnotesApplication.class }, webEnvironment = WebEnvironment.RANDOM_PORT)
