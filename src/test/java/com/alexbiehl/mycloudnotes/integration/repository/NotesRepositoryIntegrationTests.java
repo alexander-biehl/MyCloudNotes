@@ -1,4 +1,4 @@
-package com.alexbiehl.mycloudnotes.integration;
+package com.alexbiehl.mycloudnotes.integration.repository;
 
 import com.alexbiehl.mycloudnotes.model.Note;
 import com.alexbiehl.mycloudnotes.model.User;
@@ -7,8 +7,6 @@ import com.alexbiehl.mycloudnotes.repository.UserRepository;
 import com.alexbiehl.mycloudnotes.utils.TestConstants;
 import com.alexbiehl.mycloudnotes.utils.TestPostgresContainer;
 import org.junit.jupiter.api.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;

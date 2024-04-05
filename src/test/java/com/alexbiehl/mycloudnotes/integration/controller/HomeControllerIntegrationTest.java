@@ -1,4 +1,4 @@
-package com.alexbiehl.mycloudnotes.integration;
+package com.alexbiehl.mycloudnotes.integration.controller;
 
 import com.alexbiehl.mycloudnotes.utils.TestPostgresContainer;
 import com.alexbiehl.mycloudnotes.utils.TestUtils;
