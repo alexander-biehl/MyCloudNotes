@@ -7,6 +7,8 @@ import com.alexbiehl.mycloudnotes.repository.UserRepository;
 import com.alexbiehl.mycloudnotes.utils.TestConstants;
 import com.alexbiehl.mycloudnotes.utils.TestPostgresContainer;
 import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -24,6 +26,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @Testcontainers
 public class NotesRepositoryIntegrationTests {
+
 
     @Container
     public static PostgreSQLContainer<TestPostgresContainer> postgreSQLContainer = TestPostgresContainer.getInstance();
@@ -70,18 +73,19 @@ public class NotesRepositoryIntegrationTests {
 
     @Test
     public void givenNotes_whenCreate_thenOk() {
-        final User testUser = userRepository.getReferenceById(TestConstants.TEST_ADMIN_ID);
+        final User testUser = userRepository.getReferenceById(TestConstants.TEST_USER_ID);
         assertNotNull(testUser, "Test User cannot be null");
-        final UUID testId = UUID.randomUUID();
-        final Note newNote = new Note(testId, testUser, "new title", "new content");
+        final Note newNote = new Note(testUser, "new title", "new content");
         assertEquals(2, notesRepository.findAll().size(), "Should only contain 2 notes at test start");
-        notesRepository.saveAndFlush(newNote);
-
+        final Note savedNote = notesRepository.saveAndFlush(newNote);
         List<Note> foundNotes = notesRepository.findAll();
+
         assertEquals(3, foundNotes.size(), "Size should be 3 after creating new note");
-        assertTrue(foundNotes.stream().anyMatch(note -> (TestConstants.TEST_NOTE_ID.equals(note.getId()))), "List of notes should contain the new note");
-        final Note foundNote = notesRepository.getReferenceById(testId);
-        assertEquals(newNote.getId(), foundNote.getId());
+        assertTrue(foundNotes.stream().anyMatch(note -> (TestConstants.TEST_NOTE_ID.equals(note.getId()))), "List of notes should contain the existing note");
+        assertTrue(foundNotes.stream().anyMatch(note -> (savedNote.getId().equals(note.getId()))), "List of notes should contain the new note");
+
+        final Note foundNote = notesRepository.getReferenceById(savedNote.getId());
+        assertEquals(savedNote.getId(), foundNote.getId());
         assertEquals(newNote.getUser(), foundNote.getUser());
         assertEquals(newNote.getTitle(), foundNote.getTitle());
         assertEquals(newNote.getContent(), foundNote.getContent());

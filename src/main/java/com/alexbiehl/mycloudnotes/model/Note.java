@@ -24,6 +24,18 @@ public class Note {
     public Note() {
     }
 
+    // for convenience
+    public Note(User user, String title, String content) {
+        this.user = user;
+        this.title = title;
+        this.content = content;
+    }
+
+    public Note(String title, String content) {
+        this.title = title;
+        this.content = content;
+    }
+
     public Note(UUID id, User user, String title, String content) {
         this.id = id;
         this.user = user;
