@@ -5,6 +5,7 @@ import java.util.UUID;
 import com.alexbiehl.mycloudnotes.dto.NoteDTO;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.Fetch;
 
 @Entity
 @Table(name = "notes")
@@ -13,8 +14,8 @@ public class Note {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
-    @OneToOne
-    @JoinColumn(name = "user_id", referencedColumnName = "id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
     private User user;
     private String content;
     private String title;

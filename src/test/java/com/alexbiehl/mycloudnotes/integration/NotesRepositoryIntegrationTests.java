@@ -1,6 +1,7 @@
 package com.alexbiehl.mycloudnotes.integration;
 
 import com.alexbiehl.mycloudnotes.model.Note;
+import com.alexbiehl.mycloudnotes.model.User;
 import com.alexbiehl.mycloudnotes.repository.NotesRepository;
 import com.alexbiehl.mycloudnotes.repository.UserRepository;
 import com.alexbiehl.mycloudnotes.utils.TestConstants;
@@ -13,8 +14,10 @@ import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import java.util.List;
+import java.util.UUID;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 
 @DataJpaTest
@@ -40,5 +43,47 @@ public class NotesRepositoryIntegrationTests {
         assertEquals(note.getContent(), "content");
     }
 
+    @Test
+    public void givenNotesRepository_whenRetrieve_thenNotOk() throws Exception{
+        assertTrue(notesRepository.findById(UUID.randomUUID()).isEmpty());
+    }
 
+    @Test
+    public void givenNotes_whenUpdate_thenOk() {
+        Note note = notesRepository.findById(TestConstants.TEST_NOTE_ID).get();
+        assertNotNull(note);
+        assertEquals(note.getTitle(), "title");
+        assertEquals(note.getContent(), "content");
+
+        note.setContent("new content");
+        notesRepository.saveAndFlush(note);
+        Note updatedNote = notesRepository.getReferenceById(TestConstants.TEST_NOTE_ID);
+        assertEquals(updatedNote.getContent(), "new content");
+    }
+
+    @Test
+    public void givenNotes_whenDelete_thenOk() {
+        notesRepository.deleteById(TestConstants.TEST_NOTE_ID);
+        List<Note> notes = notesRepository.findAll();
+        assertEquals(notes.size(), 1);
+    }
+
+    @Test
+    public void givenNotes_whenCreate_thenOk() {
+        final User testUser = userRepository.getReferenceById(TestConstants.TEST_ADMIN_ID);
+        assertNotNull(testUser, "Test User cannot be null");
+        final UUID testId = UUID.randomUUID();
+        final Note newNote = new Note(testId, testUser, "new title", "new content");
+        assertEquals(2, notesRepository.findAll().size(), "Should only contain 2 notes at test start");
+        notesRepository.saveAndFlush(newNote);
+
+        List<Note> foundNotes = notesRepository.findAll();
+        assertEquals(3, foundNotes.size(), "Size should be 3 after creating new note");
+        assertTrue(foundNotes.stream().anyMatch(note -> (TestConstants.TEST_NOTE_ID.equals(note.getId()))), "List of notes should contain the new note");
+        final Note foundNote = notesRepository.getReferenceById(testId);
+        assertEquals(newNote.getId(), foundNote.getId());
+        assertEquals(newNote.getUser(), foundNote.getUser());
+        assertEquals(newNote.getTitle(), foundNote.getTitle());
+        assertEquals(newNote.getContent(), foundNote.getContent());
+    }
 }
