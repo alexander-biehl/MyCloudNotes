@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.lang.NonNull;
+import org.springframework.security.access.prepost.PostFilter;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -52,6 +53,7 @@ public class NotesController {
     }
 
     @GetMapping("")
+    @PostFilter("filterObject.user.id == authentication.principal.user.id")
     public List<NoteDTO> GetNotes() {
         LOGGER.info("Calling GetNotes");
         return notesService.getNotes()
