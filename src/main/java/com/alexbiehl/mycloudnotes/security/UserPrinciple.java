@@ -7,6 +7,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 public class UserPrinciple implements UserDetails  {
@@ -57,5 +58,12 @@ public class UserPrinciple implements UserDetails  {
 
     public User getUser() {
         return this.user;
+    }
+
+    public UUID getId() {
+        if (this.user != null) {
+            return this.user.getId();
+        }
+        return null;
     }
 }

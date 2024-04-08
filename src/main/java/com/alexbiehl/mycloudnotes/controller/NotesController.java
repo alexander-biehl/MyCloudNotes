@@ -53,7 +53,7 @@ public class NotesController {
     }
 
     @GetMapping("")
-    @PostFilter("filterObject.user.id == authentication.principal.user.id or hasRole('ADMIN')")
+    @PostFilter("filterObject.user.id == authentication.principal.getId() or hasRole('ADMIN')")
     public List<NoteDTO> GetNotes() {
         LOGGER.info("Calling GetNotes");
         return notesService.getNotes()
