@@ -4,6 +4,7 @@ import java.util.UUID;
 
 import com.alexbiehl.mycloudnotes.dto.NoteDTO;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import org.hibernate.annotations.Fetch;
 
@@ -16,7 +17,9 @@ public class Note {
     private UUID id;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
+    @JsonIgnoreProperties(value = { "roles", "notes" })
     private User user;
+    // private UUID user_id;
     private String content;
     private String title;
 
@@ -42,6 +45,13 @@ public class Note {
         this.title = title;
         this.content = content;
     }
+
+//    public Note(UUID id, UUID user, String title, String content) {
+//        this.id = id;
+//        this.user_id = user;
+//        this.title = title;
+//        this.content = content;
+//    }
 
     public UUID getId() {
         return id;
@@ -115,6 +125,6 @@ public class Note {
     }
 
     public static Note from(NoteDTO note) {
-        return new Note(note.getId(), note.getUser(), note.getTitle(), note.getContent());
+        return new Note(note.getId(), User.from(note.getUser()), note.getTitle(), note.getContent());
     }
 }

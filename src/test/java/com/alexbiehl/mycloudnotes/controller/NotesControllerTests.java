@@ -11,6 +11,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.util.UUID;
 
+import com.alexbiehl.mycloudnotes.dto.UserDTO;
 import com.alexbiehl.mycloudnotes.utils.TestUtils;
 import com.alexbiehl.mycloudnotes.model.User;
 import org.junit.jupiter.api.Test;
@@ -96,7 +97,7 @@ public class NotesControllerTests {
         public void testPostNote_andOk() throws Exception {
                 // set up test data
                 User user = TestUtils.generateUser();
-                NoteDTO testNote = new NoteDTO(null, user, "Test Note", "Note Content.");
+                NoteDTO testNote = new NoteDTO(null, UserDTO.from(user), "Test Note", "Note Content.");
                 Note toReturnNote = Note.from(testNote);
                 toReturnNote.setId(UUID.randomUUID());
 
@@ -120,7 +121,7 @@ public class NotesControllerTests {
                 // set up test data
                 UUID id = UUID.randomUUID();
                 User user = TestUtils.generateUser();
-                NoteDTO dto = new NoteDTO(id, user, "New Note", "Note Content.");
+                NoteDTO dto = new NoteDTO(id, UserDTO.from(user), "New Note", "Note Content.");
                 Note returnNote = Note.from(dto);
 
                 // mock return values
@@ -146,7 +147,7 @@ public class NotesControllerTests {
                 // set up test data
                 UUID id = UUID.randomUUID();
                 User user = TestUtils.generateUser();
-                NoteDTO dto = new NoteDTO(id, user, "New Note", "Content.");
+                NoteDTO dto = new NoteDTO(id, UserDTO.from(user), "New Note", "Content.");
                 Note returnNote = Note.from(dto);
 
                 // mock return values

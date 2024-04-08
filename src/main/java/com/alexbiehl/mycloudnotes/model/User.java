@@ -1,6 +1,9 @@
 package com.alexbiehl.mycloudnotes.model;
 
+import com.alexbiehl.mycloudnotes.dto.UserDTO;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import org.springframework.lang.NonNull;
 
 import java.util.List;
 import java.util.Set;
@@ -17,6 +20,7 @@ public class User {
     private String username;
     private String password;
     private boolean active;
+
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "user_roles", joinColumns =
@@ -35,6 +39,12 @@ public class User {
         this.id = id;
         this.username = username;
         this.password = password;
+        this.active = active;
+    }
+
+    public User(UUID id, String username, boolean active) {
+        this.id = id;
+        this.username = username;
         this.active = active;
     }
 
@@ -113,5 +123,9 @@ public class User {
                 .append(", roles = ").append(this.roles)
                 .append(">");
         return builder.toString();
+    }
+
+    public static User from(@NonNull UserDTO userDTO) {
+        return new User(userDTO.getId(), userDTO.getUsername(), userDTO.isActive());
     }
 }
