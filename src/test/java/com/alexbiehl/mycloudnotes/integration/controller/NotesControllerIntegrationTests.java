@@ -62,4 +62,17 @@ public class NotesControllerIntegrationTests {
                 .andDo(print())
                 .andExpect(status().isUnauthorized());
     }
+
+    @Test
+    @WithUserDetails(value = "test_admin", userDetailsServiceBeanName = "userDetailsService")
+    public void givenAdminAndNotes_confirmAdminSeesAll() throws Exception {
+        final User adminUser = userRepository.getReferenceById(TestConstants.TEST_ADMIN_ID);
+        mockMvc.perform(
+                get("/notes")
+                        .with(httpBasic("test_admin", "password"))
+                        .accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(2)));
+    }
 }
