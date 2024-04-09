@@ -129,6 +129,23 @@ public class NotesControllerTests {
                                 .andExpect(jsonPath("$.id").exists());
         }
 
+        @Test
+        @WithMockUser
+        public void testPostNote_userNotFound() throws Exception {
+                User user = TestUtils.generateUser();
+                NoteDTO testNote = new NoteDTO(null, "Test Note", "Note Content.");
+
+                Mockito.when(userService.getUserByUsername(Mockito.anyString())).thenReturn(null);
+
+                mockMvc.perform(
+                        post("/notes")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .accept(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(testNote)))
+                        .andDo(print())
+                        .andExpect(status().isNotFound());
+        }
+
         @SuppressWarnings("null")
         @Test
         @WithMockUser
@@ -187,6 +204,24 @@ public class NotesControllerTests {
                                 .andExpect(jsonPath("$.userId").value(user.getId().toString()))
                                 .andExpect(jsonPath("$.title").value(dto.getTitle()))
                                 .andExpect(jsonPath("$.content").value(dto.getContent()));
+        }
+
+        @Test
+        @WithMockUser
+        public void testPutNote_userNotFound() throws Exception {
+                User user = TestUtils.generateUser();
+                UUID id = UUID.randomUUID();
+                NoteDTO testNote = new NoteDTO(id, "Test Note", "Note Content.");
+
+                Mockito.when(userService.getUserByUsername(Mockito.anyString())).thenReturn(null);
+
+                mockMvc.perform(
+                                put("/notes/" + id.toString())
+                                        .contentType(MediaType.APPLICATION_JSON)
+                                        .accept(MediaType.APPLICATION_JSON)
+                                        .content(objectMapper.writeValueAsString(testNote)))
+                        .andDo(print())
+                        .andExpect(status().isNotFound());
         }
 
         @SuppressWarnings("null")
