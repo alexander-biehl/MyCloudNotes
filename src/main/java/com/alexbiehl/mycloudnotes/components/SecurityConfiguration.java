@@ -82,6 +82,7 @@ public class SecurityConfiguration {
                                 .anyRequest().authenticated())
                 // specify basic auth
                 .httpBasic(Customizer.withDefaults())
+                .formLogin(Customizer.withDefaults())
                 .authenticationProvider(authenticationProvider());
         return http.build();
     }

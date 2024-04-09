@@ -16,10 +16,10 @@ public class Note {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
+    @JoinColumn
     @JsonIgnoreProperties(value = { "roles", "notes" })
     private User user;
-    // private UUID user_id;
+
     private String content;
     private String title;
 
@@ -46,12 +46,11 @@ public class Note {
         this.content = content;
     }
 
-//    public Note(UUID id, UUID user, String title, String content) {
-//        this.id = id;
-//        this.user_id = user;
-//        this.title = title;
-//        this.content = content;
-//    }
+    public Note(UUID id, String title, String content) {
+        this.id = id;
+        this.title = title;
+        this.content = content;
+    }
 
     public UUID getId() {
         return id;
@@ -125,6 +124,6 @@ public class Note {
     }
 
     public static Note from(NoteDTO note) {
-        return new Note(note.getId(), User.from(note.getUser()), note.getTitle(), note.getContent());
+        return new Note(note.getId(), note.getTitle(), note.getContent());
     }
 }

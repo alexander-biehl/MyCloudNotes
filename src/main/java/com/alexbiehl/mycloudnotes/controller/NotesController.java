@@ -1,15 +1,24 @@
 package com.alexbiehl.mycloudnotes.controller;
 
+import java.security.Principal;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import com.alexbiehl.mycloudnotes.model.User;
+import com.alexbiehl.mycloudnotes.security.UserPrincipal;
+import com.alexbiehl.mycloudnotes.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.lang.NonNull;
 import org.springframework.security.access.prepost.PostFilter;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -34,26 +43,44 @@ public class NotesController {
     private static Logger LOGGER = LoggerFactory.getLogger(NotesController.class);
 
     @Autowired
-    NotesService notesService;
+    private NotesService notesService;
+
+    @Autowired
+    private UserService userService;
 
     @SuppressWarnings("null")
     @PostMapping("")
-    public NoteDTO postNote(@NonNull @RequestBody NoteDTO noteDTO, final HttpServletResponse response) {
+    public NoteDTO postNote(@NonNull @RequestBody NoteDTO noteDTO,
+                            final HttpServletResponse response) {
         LOGGER.info(
                 String.format("POST NoteDTO: id: %s, title: %s, content: %s",
                         noteDTO.getId(),
                         noteDTO.getTitle(),
                         noteDTO.getContent()));
 
+        // get authenticated user and ensure they exist
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        User user = userService.getUserByUsername(authentication.getName());
+        if (user == null) {
+            LOGGER.warn(String.format("Unable to find User with username: %s", authentication.getName()));
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,
+                    String.format("User %s not found", authentication.getName()));
+        }
+
+        // convert and save our model
         Note noteModel = Note.from(noteDTO);
+        noteModel.setUser(user);
         noteModel = notesService.save(noteModel);
+
+        // set return values
         noteDTO.setId(noteModel.getId());
+        noteDTO.setUser(noteModel.getUser().getId());
         response.setStatus(HttpStatus.CREATED.value());
         return noteDTO;
     }
 
     @GetMapping("")
-    @PostFilter("filterObject.user.id == authentication.principal.getId() or hasRole('ADMIN')")
+    @PostFilter("filterObject.userId == authentication.principal.getId() or hasRole('ADMIN')")
     public List<NoteDTO> GetNotes() {
         LOGGER.info("Calling GetNotes");
         return notesService.getNotes()
@@ -81,20 +108,32 @@ public class NotesController {
             final HttpServletResponse response) {
         LOGGER.info(String.format("Calling UpdateNote with id: %s", id.toString()));
 
+        // get the authenticated user and ensure they are valid
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        User user = userService.getUserByUsername(authentication.getName());
+        if (user == null) {
+            LOGGER.warn(String.format("Unable to find User with username: %s", authentication.getName()));
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("User %s not found", authentication.getName()));
+        }
+
+        // prepare our model for saving
         Note savedNote = Note.from(updatedNote);
+        savedNote.setUser(user);
+
         // If the note does not exist, we are creating a new one and thus need to return
         // 201 CREATED
         if (!notesService.exists(id)) {
             LOGGER.debug("PUT note does not exist, creating new");
-            savedNote = notesService.save(savedNote);
             response.setStatus(HttpStatus.CREATED.value());
-            updatedNote.setId(savedNote.getId());
-            return updatedNote;
-        } else {
-            LOGGER.debug("Updating existing Note.");
-            savedNote = notesService.save(savedNote);
-            return updatedNote;
         }
+        savedNote = notesService.save(savedNote);
+
+        // set return values
+        updatedNote = NoteDTO.from(savedNote);
+        updatedNote.setId(savedNote.getId());
+        updatedNote.setUser(savedNote.getUser().getId());
+        return updatedNote;
+
     }
 
     @DeleteMapping(API.BY_ID)

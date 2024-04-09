@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import com.alexbiehl.mycloudnotes.model.Note;
 import com.alexbiehl.mycloudnotes.repository.NotesRepository;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class NotesService {

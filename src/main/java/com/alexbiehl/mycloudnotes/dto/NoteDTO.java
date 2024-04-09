@@ -10,15 +10,26 @@ import com.alexbiehl.mycloudnotes.model.Note;
 public class NoteDTO {
 
     private UUID id;
-    private UserDTO user;
+    private UUID userId;
     private String title;
     private String content;
 
     public NoteDTO() {}
 
-    public NoteDTO(UUID id, UserDTO user, String title, String content) {
+    public NoteDTO(UUID id, UUID userId, String title, String content) {
         this.id = id;
-        this.user = user;
+        this.userId = userId;
+        this.title = title;
+        this.content = content;
+    }
+
+    public NoteDTO(UUID userId, String title, String content) {
+        this.userId = userId;
+        this.title = title;
+        this.content = content;
+    }
+
+    public NoteDTO(String title, String content) {
         this.title = title;
         this.content = content;
     }
@@ -47,12 +58,12 @@ public class NoteDTO {
         this.content = content;
     }
 
-    public UserDTO getUser() {
-        return user;
+    public UUID getUserId() {
+        return userId;
     }
 
-    public void setUser(UserDTO user) {
-        this.user = user;
+    public void setUser(UUID userId) {
+        this.userId = userId;
     }
 
     @Override
@@ -71,6 +82,9 @@ public class NoteDTO {
     }
 
     public static NoteDTO from(@NonNull Note note) {
-        return new NoteDTO(note.getId(), UserDTO.from(note.getUser()), note.getTitle(), note.getContent());
+        if (note.getUser() == null) {
+            return new NoteDTO(note.getId(), note.getTitle(), note.getContent());
+        }
+        return new NoteDTO(note.getId(), note.getUser().getId(), note.getTitle(), note.getContent());
     }
 }

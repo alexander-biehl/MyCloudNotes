@@ -1,6 +1,5 @@
 package com.alexbiehl.mycloudnotes.security;
 
-import com.alexbiehl.mycloudnotes.model.Role;
 import com.alexbiehl.mycloudnotes.model.User;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -10,13 +9,13 @@ import java.util.Collection;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-public class UserPrinciple implements UserDetails  {
+public class UserPrincipal implements UserDetails  {
 
     private static final long serialVersionUID = 1l;
 
     private final User user;
 
-    public UserPrinciple(User user) {
+    public UserPrincipal(User user) {
         this.user = user;
     }
     @Override

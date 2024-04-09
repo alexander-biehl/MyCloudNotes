@@ -20,6 +20,6 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         if (user == null) {
             throw new UsernameNotFoundException(username);
         }
-        return new UserPrinciple(user);
+        return new UserPrincipal(user);
     }
 }
