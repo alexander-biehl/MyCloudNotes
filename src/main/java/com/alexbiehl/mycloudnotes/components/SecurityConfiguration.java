@@ -1,5 +1,6 @@
 package com.alexbiehl.mycloudnotes.components;
 
+import com.alexbiehl.mycloudnotes.api.API;
 import com.alexbiehl.mycloudnotes.security.UserDetailsServiceImpl;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -10,6 +11,8 @@ import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.FormLoginConfigurer;
+import org.springframework.security.config.annotation.web.configurers.LogoutConfigurer;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -32,6 +35,9 @@ public class SecurityConfiguration {
 
     @Value("${cors.exposedHeaders}")
     private String[] exposedHeaders;
+
+    @Value("${frontend.host}")
+    private String frontendHost;
 
     @Bean
     public WebMvcConfigurer corsConfigurer() {
@@ -82,7 +88,29 @@ public class SecurityConfiguration {
                                 .anyRequest().authenticated())
                 // specify basic auth
                 .httpBasic(Customizer.withDefaults())
-                .formLogin(Customizer.withDefaults())
+                // enables external login? may not need if we do JWT
+                .formLogin((formLogin) -> formLogin.loginPage(frontendHost + "/" + API.LOGIN_USER)
+                        .defaultSuccessUrl(frontendHost)
+                        .permitAll())
+                /*.formLogin((new Customizer<FormLoginConfigurer<HttpSecurity>>() {
+                    @Override
+                    public void customize(FormLoginConfigurer<HttpSecurity> httpSecurityFormLoginConfigurer) {
+                        httpSecurityFormLoginConfigurer.loginPage(frontendHost + "/" + API.LOGIN_USER);
+                    }
+                }))*/
+                // enables external logout? may not need if we do JWT
+                .logout((logout) -> logout.logoutUrl(API.LOGOUT_USER)
+                        .logoutSuccessUrl(frontendHost)
+                        .invalidateHttpSession(true)
+                        .deleteCookies("JSESSIONID")
+                        .permitAll())
+                /*
+                .logout((new Customizer<LogoutConfigurer<HttpSecurity>>() {
+                    @Override
+                    public void customize(LogoutConfigurer<HttpSecurity> httpSecurityLogoutConfigurer) {
+                        httpSecurityLogoutConfigurer.logoutUrl(frontendHost + "/" + API.LOGOUT_USER);
+                    }
+                }))*/
                 .authenticationProvider(authenticationProvider());
         return http.build();
     }
