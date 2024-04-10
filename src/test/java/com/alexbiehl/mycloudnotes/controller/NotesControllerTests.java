@@ -12,6 +12,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.util.UUID;
 
+import com.alexbiehl.mycloudnotes.api.API;
 import com.alexbiehl.mycloudnotes.service.UserService;
 import com.alexbiehl.mycloudnotes.utils.TestUtils;
 import com.alexbiehl.mycloudnotes.model.User;
@@ -57,7 +58,7 @@ public class NotesControllerTests {
         @WithAnonymousUser
         public void withoutData_testGetNotesEndpoint() throws Exception {
                 mockMvc.perform(
-                                get("/notes")
+                                get(API.NOTES)
                                                 .accept(MediaType.APPLICATION_JSON))
                                 .andDo(print())
                                 .andExpect(status().isOk())
@@ -78,7 +79,7 @@ public class NotesControllerTests {
 
                 // perform the test
                 mockMvc.perform(
-                                get("/notes/" + id.toString())
+                                get(API.NOTES + "/" + id.toString())
                                                 .accept(MediaType.APPLICATION_JSON))
                                 .andDo(print())
                                 .andExpect(status().isOk())
@@ -98,7 +99,7 @@ public class NotesControllerTests {
                 Mockito.when(notesService.getNoteById(id)).thenReturn(null);
 
                 mockMvc.perform(
-                                get("/notes/" + id.toString())
+                                get(API.NOTES + "/" + id.toString())
                                                 .accept(MediaType.APPLICATION_JSON))
                                 .andDo(print())
                                 .andExpect(status().isNotFound());
@@ -120,7 +121,7 @@ public class NotesControllerTests {
 
                 // perform test
                 mockMvc.perform(
-                                post("/notes")
+                                post(API.NOTES)
                                                 .contentType(MediaType.APPLICATION_JSON)
                                                 .accept(MediaType.APPLICATION_JSON)
                                                 .content(objectMapper.writeValueAsString(testNote)))
@@ -138,7 +139,7 @@ public class NotesControllerTests {
                 Mockito.when(userService.getUserByUsername(Mockito.anyString())).thenReturn(null);
 
                 mockMvc.perform(
-                        post("/notes")
+                        post(API.NOTES)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .accept(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(testNote)))
@@ -164,7 +165,7 @@ public class NotesControllerTests {
                 Mockito.when(notesService.save(Mockito.any(Note.class))).thenReturn(returnNote);
 
                 mockMvc.perform(
-                                put("/notes/" + id.toString())
+                                put(API.NOTES + "/" + id.toString())
                                                 .contentType(MediaType.APPLICATION_JSON)
                                                 .accept(MediaType.APPLICATION_JSON)
                                                 .content(objectMapper.writeValueAsString(dto)))
@@ -194,7 +195,7 @@ public class NotesControllerTests {
                 Mockito.when(notesService.save(Mockito.any(Note.class))).thenReturn(returnNote);
 
                 mockMvc.perform(
-                                put("/notes/" + id.toString())
+                                put(API.NOTES + "/" + id.toString())
                                                 .contentType(MediaType.APPLICATION_JSON)
                                                 .accept(MediaType.APPLICATION_JSON)
                                                 .content(objectMapper.writeValueAsString(dto)))
@@ -216,7 +217,7 @@ public class NotesControllerTests {
                 Mockito.when(userService.getUserByUsername(Mockito.anyString())).thenReturn(null);
 
                 mockMvc.perform(
-                                put("/notes/" + id.toString())
+                                put(API.NOTES + "/" + id.toString())
                                         .contentType(MediaType.APPLICATION_JSON)
                                         .accept(MediaType.APPLICATION_JSON)
                                         .content(objectMapper.writeValueAsString(testNote)))
@@ -235,7 +236,7 @@ public class NotesControllerTests {
                 Mockito.when(notesService.exists(id)).thenReturn(true);
 
                 // test
-                mockMvc.perform(delete("/notes/" + id.toString()))
+                mockMvc.perform(delete(API.NOTES + "/" + id.toString()))
                                 .andDo(print())
                                 .andExpect(status().isOk());
         }
@@ -251,7 +252,7 @@ public class NotesControllerTests {
                 Mockito.when(notesService.exists(id)).thenReturn(false);
 
                 // test
-                mockMvc.perform(delete("/notes/" + id.toString()))
+                mockMvc.perform(delete(API.NOTES + "/" + id.toString()))
                                 .andDo(print())
                                 .andExpect(status().isNotFound());
         }

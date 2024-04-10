@@ -9,6 +9,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 
+import com.alexbiehl.mycloudnotes.api.API;
 import com.alexbiehl.mycloudnotes.components.SecurityConfiguration;
 import com.alexbiehl.mycloudnotes.dto.NoteDTO;
 import com.alexbiehl.mycloudnotes.model.User;
@@ -54,7 +55,7 @@ public class NotesControllerIntegrationTests {
     public void givenUserAndNotes_confirmUserOnlySeesOwnNotes() throws Exception {
         final User testUser = userRepository.getReferenceById(TestConstants.TEST_USER_ID);
         mockMvc.perform(
-                get("/notes")
+                get(API.NOTES)
                         .with(httpBasic("test_user", "password"))
                         .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
@@ -66,7 +67,7 @@ public class NotesControllerIntegrationTests {
     @Test
     public void confirmAuthRequired() throws Exception {
         mockMvc.perform(
-                get("/notes")
+                get(API.NOTES)
                     .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isUnauthorized());
@@ -77,7 +78,7 @@ public class NotesControllerIntegrationTests {
     public void givenAdminAndNotes_confirmAdminSeesAll() throws Exception {
         final User adminUser = userRepository.getReferenceById(TestConstants.TEST_ADMIN_ID);
         mockMvc.perform(
-                get("/notes")
+                get(API.NOTES)
                         .with(httpBasic("test_admin", "password"))
                         .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
@@ -89,7 +90,7 @@ public class NotesControllerIntegrationTests {
     @WithUserDetails(value = "test_user2", userDetailsServiceBeanName = "userDetailsService")
     public void givenUserNoNotes_confirmEmptyList() throws Exception {
         mockMvc.perform(
-                get("/notes")
+                get(API.NOTES)
                         .accept(MediaType.APPLICATION_JSON)
                         .with(httpBasic("test_user2", "password")))
                 .andDo(print())
@@ -104,7 +105,7 @@ public class NotesControllerIntegrationTests {
         NoteDTO testNote = new NoteDTO("testPOST", "This is a POST Test");
 
         mockMvc.perform(
-                post("/notes")
+                post(API.NOTES)
                         .with(csrf())
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -118,7 +119,7 @@ public class NotesControllerIntegrationTests {
     @Test
     public void onPost_confirmAuthRequired() throws Exception {
         mockMvc.perform(
-                post("/notes")
+                post(API.NOTES)
                     .contentType(MediaType.APPLICATION_JSON)
                     .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())

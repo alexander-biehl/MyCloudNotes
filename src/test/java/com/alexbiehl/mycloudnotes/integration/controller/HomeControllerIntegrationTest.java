@@ -1,5 +1,6 @@
 package com.alexbiehl.mycloudnotes.integration.controller;
 
+import com.alexbiehl.mycloudnotes.api.API;
 import com.alexbiehl.mycloudnotes.utils.TestPostgresContainer;
 import com.alexbiehl.mycloudnotes.utils.TestUtils;
 
@@ -40,7 +41,7 @@ public class HomeControllerIntegrationTest {
         public void testHealthCheck_withoutCors() {
                 ResponseEntity<String> response = this.restTemplate.exchange(
                                 RequestEntity.get(
-                                                TestUtils.uri(this.restTemplate, "/health-check")).build(),
+                                                TestUtils.uri(this.restTemplate, API.HEALTH_CHECK)).build(),
                                 String.class);
 
                 assertEquals(response.getStatusCode(), HttpStatus.OK);
@@ -50,7 +51,7 @@ public class HomeControllerIntegrationTest {
         @Test
         public void testHealthCheck_withCors() {
                 ResponseEntity<String> response = this.restTemplate.exchange(
-                                RequestEntity.get(TestUtils.uri(this.restTemplate, "/health-check"))
+                                RequestEntity.get(TestUtils.uri(this.restTemplate, API.HEALTH_CHECK))
                                                 .header(HttpHeaders.ORIGIN, "http://localhost:9000")
                                                 .build(),
                                 String.class);
