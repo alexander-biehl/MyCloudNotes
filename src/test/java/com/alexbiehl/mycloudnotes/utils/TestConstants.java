@@ -2,6 +2,9 @@ package com.alexbiehl.mycloudnotes.utils;
 
 import java.util.UUID;
 
+/**
+ * Handy constants to refer to in tests when dealing with the database
+ */
 public class TestConstants {
 
     public static final String USER_ROLE_NAME = "ROLE_USER";
