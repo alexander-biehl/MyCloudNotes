@@ -100,7 +100,7 @@ public class SecurityConfiguration {
                 }))*/
                 // enables external logout? may not need if we do JWT
                 .logout((logout) -> logout.logoutUrl(API.LOGOUT_USER)
-                        .logoutSuccessUrl(frontendHost)
+                        .logoutSuccessUrl(frontendHost + "/" + API.LOGOUT_USER + "?logoutSuccess=true")
                         .invalidateHttpSession(true)
                         .deleteCookies("JSESSIONID")
                         .permitAll())
