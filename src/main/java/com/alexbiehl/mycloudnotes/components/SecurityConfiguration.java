@@ -111,6 +111,8 @@ public class SecurityConfiguration {
                         httpSecurityLogoutConfigurer.logoutUrl(frontendHost + "/" + API.LOGOUT_USER);
                     }
                 }))*/
+                .sessionManagement((session) -> session
+                        .maximumSessions(1))
                 .authenticationProvider(authenticationProvider());
         return http.build();
     }
