@@ -12,8 +12,8 @@ public class API {
 
     /** User Paths */
     public static final String REGISTER_USER = "/register";
-    public static final String LOGIN_USER = USERS + "/login";
-    public static final String LOGOUT_USER = USERS + "/logout";
+    public static final String LOGIN_USER = "/login";
+    public static final String LOGOUT_USER = "/logout";
 
     /** Utility Paths */
     public static final String HEALTH_CHECK = "/health-check";

@@ -11,11 +11,11 @@ import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configurers.FormLoginConfigurer;
-import org.springframework.security.config.annotation.web.configurers.LogoutConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
@@ -60,7 +60,7 @@ public class SecurityConfiguration {
                         .allowedMethods(allowedMethods)
                         .allowedOriginPatterns(allowedOriginPatterns)
                         .exposedHeaders(exposedHeaders);
-                registry.addMapping("/user**")
+                registry.addMapping("/users**")
                         .allowedHeaders(allowedHeaders)
                         .allowedMethods(allowedMethods)
                         .allowedOriginPatterns(allowedOriginPatterns)
@@ -82,7 +82,7 @@ public class SecurityConfiguration {
                 .cors(Customizer.withDefaults())
                 .authorizeHttpRequests(authorizationManagerRequestMatcherRegistry ->
                         authorizationManagerRequestMatcherRegistry
-                                .requestMatchers("/user**").permitAll()
+                                .requestMatchers("/users/register", "/users/login").permitAll()
                                 .requestMatchers("/health-check").permitAll()
                                 .requestMatchers("/admin**").hasAuthority("ROLE_ADMIN")
                                 .anyRequest().authenticated())
@@ -111,9 +111,10 @@ public class SecurityConfiguration {
                         httpSecurityLogoutConfigurer.logoutUrl(frontendHost + "/" + API.LOGOUT_USER);
                     }
                 }))*/
-                .sessionManagement((session) -> session
-                        .maximumSessions(1))
-                .authenticationProvider(authenticationProvider());
+                .sessionManagement(session -> session
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authenticationProvider(authenticationProvider())
+                .addFilterBefore(jwtFilter(), UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
 
@@ -128,5 +129,10 @@ public class SecurityConfiguration {
         authProvider.setUserDetailsService(userDetailsService());
         authProvider.setPasswordEncoder(passwordEncoder());
         return authProvider;
+    }
+
+    @Bean
+    public JwtAuthorizationFilter jwtFilter() {
+        return new JwtAuthorizationFilter();
     }
 }
