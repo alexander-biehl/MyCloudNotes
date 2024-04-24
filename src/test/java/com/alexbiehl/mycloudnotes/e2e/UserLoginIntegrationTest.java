@@ -21,6 +21,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 import org.testcontainers.containers.PostgreSQLContainer;
@@ -29,6 +30,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.util.UUID;
 
+import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -95,5 +97,21 @@ public class UserLoginIntegrationTest {
                         .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isForbidden());
+    }
+
+    @Test
+    public void invalidUser_testLogin_andFail() throws Exception {
+        UserLoginDTO invalidUser = new UserLoginDTO("invalid_User", "password");
+
+        mockMvc.perform(
+                        post(API.USERS + API.LOGIN_USER)
+                                .with(csrf())
+                                .content(objectMapper.writeValueAsString(invalidUser))
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isForbidden());
+                //.andExpect(result -> assertInstanceOf(UsernameNotFoundException.class, result.getResolvedException()))
+                //.andExpect(result -> assertEquals("User invalid_user not found", result.getResolvedException().getMessage()));
     }
 }
