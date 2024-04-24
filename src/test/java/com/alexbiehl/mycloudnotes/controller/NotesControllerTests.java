@@ -13,6 +13,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import java.util.UUID;
 
 import com.alexbiehl.mycloudnotes.api.API;
+import com.alexbiehl.mycloudnotes.components.JwtAuthorizationFilter;
+import com.alexbiehl.mycloudnotes.components.JwtUtil;
 import com.alexbiehl.mycloudnotes.service.UserService;
 import com.alexbiehl.mycloudnotes.utils.TestUtils;
 import com.alexbiehl.mycloudnotes.model.User;
@@ -21,10 +23,12 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithAnonymousUser;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 
 import com.alexbiehl.mycloudnotes.dto.NoteDTO;
@@ -37,6 +41,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @WebMvcTest(controllers = NotesController.class)
 // use addFilters = False so security filters don't get loaded
 @AutoConfigureMockMvc(addFilters = false)
+@ContextConfiguration(classes = {NotesController.class, JwtUtil.class, JwtAuthorizationFilter.class})
 public class NotesControllerTests {
 
 

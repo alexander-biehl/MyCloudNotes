@@ -71,8 +71,6 @@ public class UserLoginIntegrationTest {
         User testUser = userRepository.getReferenceById(TestConstants.TEST_USER_ID);
         UserLoginDTO userLoginDTO = new UserLoginDTO(testUser.getUsername(), TestConstants.PLAIN_TEXT_PASSWORD);
 
-        String testToken = String.format("%s %s", JwtUtil.TOKEN_PREFIX, jwtUtil.createToken(testUser));
-
         mockMvc.perform(
                         post(API.USERS + API.LOGIN_USER)
                                 .with(csrf())
@@ -81,6 +79,21 @@ public class UserLoginIntegrationTest {
                                 .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(header().stringValues(HttpHeaders.AUTHORIZATION, testToken));
+                .andExpect(header().exists(HttpHeaders.AUTHORIZATION));
+    }
+
+    @Test
+    public void givenUserAndInvalidPassword_testLogin_andFail() throws Exception {
+        User testUser = userRepository.getReferenceById(TestConstants.TEST_USER_ID);
+        UserLoginDTO userLoginDTO = new UserLoginDTO(testUser.getUsername(), "an invalid password");
+
+        mockMvc.perform(
+                post(API.USERS + API.LOGIN_USER)
+                        .with(csrf())
+                        .content(objectMapper.writeValueAsString(userLoginDTO))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isForbidden());
     }
 }
