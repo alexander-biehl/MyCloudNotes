@@ -61,7 +61,8 @@ public class UserLoginE2eTest {
                                 .content(objectMapper.writeValueAsString(userDTO)))
                 .andDo(print())
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.id").exists());
+                .andExpect(jsonPath("$.id").exists())
+                .andExpect(jsonPath("$.username").value(userDTO.getUsername()));
     }
 
     @Test
