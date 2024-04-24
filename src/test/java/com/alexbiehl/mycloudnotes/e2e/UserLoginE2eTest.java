@@ -11,17 +11,13 @@ import com.alexbiehl.mycloudnotes.repository.UserRepository;
 import com.alexbiehl.mycloudnotes.utils.TestConstants;
 import com.alexbiehl.mycloudnotes.utils.TestPostgresContainer;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.jsonwebtoken.Jwt;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Import;
-import org.springframework.context.annotation.PropertySource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 import org.testcontainers.containers.PostgreSQLContainer;
@@ -30,7 +26,6 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -41,7 +36,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @Import(SecurityConfiguration.class)
 @Transactional
-public class UserLoginIntegrationTest {
+public class UserLoginE2eTest {
 
     @Container
     public static PostgreSQLContainer<TestPostgresContainer> postgreSQLContainer = TestPostgresContainer.getInstance();
@@ -65,7 +60,8 @@ public class UserLoginIntegrationTest {
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(userDTO)))
                 .andDo(print())
-                .andExpect(status().isOk());
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.id").exists());
     }
 
     @Test

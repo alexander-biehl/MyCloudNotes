@@ -34,9 +34,7 @@ public class JwtUtil {
     @Value("${jwt.token.validity}")
     private long accessTokenValidity;
 
-    public JwtUtil() {
-        /*this.jwtParser = Jwts.parser().verifyWith(Keys.password(secretKey.toCharArray())).build();*/
-    }
+    public JwtUtil() {}
 
     public String createToken(User user) {
         Date tokenCreated = new Date();

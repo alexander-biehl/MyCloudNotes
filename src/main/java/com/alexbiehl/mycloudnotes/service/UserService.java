@@ -1,15 +1,22 @@
 package com.alexbiehl.mycloudnotes.service;
 
+import com.alexbiehl.mycloudnotes.dto.UserDTO;
 import com.alexbiehl.mycloudnotes.dto.UserLoginDTO;
+import com.alexbiehl.mycloudnotes.model.Role;
 import com.alexbiehl.mycloudnotes.model.User;
+import com.alexbiehl.mycloudnotes.repository.RoleRepository;
 import com.alexbiehl.mycloudnotes.repository.UserRepository;
+import io.jsonwebtoken.lang.Collections;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.lang.NonNull;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.UUID;
 
@@ -20,6 +27,8 @@ public class UserService {
 
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private RoleRepository roleRepository;
     @Autowired
     private PasswordEncoder passwordEncoder;
 
@@ -47,8 +56,15 @@ public class UserService {
         return userRepository.findByUsername(username) != null;
     }
 
-    public User saveOrCreate(@NonNull User user) {
-        return userRepository.save(user);
+    @Transactional
+    public User registerUser(@NonNull UserDTO user) {
+        User savedUser = userRepository.findByUsername(user.getUsername());
+        if (savedUser != null) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User already exists");
+        }
+        savedUser = User.from(user);
+        savedUser.setRoles(Collections.setOf(roleRepository.findByName("USER")));
+        return userRepository.save(savedUser);
     }
 
     public void delete(@NonNull User user) {
