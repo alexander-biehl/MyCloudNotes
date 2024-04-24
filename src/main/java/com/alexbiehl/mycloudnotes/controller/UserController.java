@@ -9,13 +9,15 @@ import com.alexbiehl.mycloudnotes.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
 import org.springframework.lang.NonNull;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-@Service
+@Controller
 @RequestMapping(API.USERS)
 public class UserController {
 
@@ -29,12 +31,15 @@ public class UserController {
     @PostMapping(API.REGISTER_USER)
     public void register(@NonNull @RequestBody UserDTO userDTO) {
         LOGGER.info("Register request for UserDTO: {}", userDTO);
+
     }
 
     @PostMapping(API.LOGIN_USER)
-    public String login(@RequestBody UserLoginDTO userLogin) {
+    public ResponseEntity login(@RequestBody UserLoginDTO userLogin) {
         LOGGER.info("Login from: {}", userLogin.toString());
         User validatedUser = userService.validateUserLogin(userLogin);
-        return jwtUtil.createToken(validatedUser);
+        final String token = String.format("%s %s", JwtUtil.TOKEN_PREFIX, jwtUtil.createToken(validatedUser));
+        return ResponseEntity.ok()
+                .header(HttpHeaders.AUTHORIZATION, token).build();
     }
 }

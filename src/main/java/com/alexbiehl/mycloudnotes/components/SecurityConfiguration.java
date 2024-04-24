@@ -11,6 +11,7 @@ import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -80,6 +81,7 @@ public class SecurityConfiguration {
 
                 // exclude CORS pre-flight checks from auth
                 .cors(Customizer.withDefaults())
+                // .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorizationManagerRequestMatcherRegistry ->
                         authorizationManagerRequestMatcherRegistry
                                 .requestMatchers("/users/register", "/users/login").permitAll()
@@ -89,9 +91,9 @@ public class SecurityConfiguration {
                 // specify basic auth
                 .httpBasic(Customizer.withDefaults())
                 // enables external login? may not need if we do JWT
-                .formLogin((formLogin) -> formLogin.loginPage(frontendHost + "/" + API.LOGIN_USER)
+                /*.formLogin((formLogin) -> formLogin.loginPage(frontendHost + "/" + API.LOGIN_USER)
                         .defaultSuccessUrl(frontendHost)
-                        .permitAll())
+                        .permitAll())*/
                 /*.formLogin((new Customizer<FormLoginConfigurer<HttpSecurity>>() {
                     @Override
                     public void customize(FormLoginConfigurer<HttpSecurity> httpSecurityFormLoginConfigurer) {
@@ -99,11 +101,11 @@ public class SecurityConfiguration {
                     }
                 }))*/
                 // enables external logout? may not need if we do JWT
-                .logout((logout) -> logout.logoutUrl(API.LOGOUT_USER)
+                /*.logout((logout) -> logout.logoutUrl(API.LOGOUT_USER)
                         .logoutSuccessUrl(frontendHost + "/" + API.LOGOUT_USER + "?logoutSuccess=true")
                         .invalidateHttpSession(true)
                         .deleteCookies("JSESSIONID")
-                        .permitAll())
+                        .permitAll())*/
                 /*
                 .logout((new Customizer<LogoutConfigurer<HttpSecurity>>() {
                     @Override

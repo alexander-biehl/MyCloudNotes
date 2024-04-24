@@ -18,4 +18,7 @@ public class TestConstants {
     public static final UUID TEST_USER2_ID = UUID.fromString("fd210c53-8e93-46c6-81b4-4c3188568619");
 
     public static final UUID TEST_NOTE_ID = UUID.fromString("6608cd99-e2f7-4dca-b4dc-9a40a21a25b9");
+
+    public static final String PLAIN_TEXT_PASSWORD = "password";
+    public static final String ENCRYPTED_PASSWORD = "$2y$11$t2/h9Y3rtugyl0tB56MaFOhCVxZnrY3sa.JRrDsmqAa8lZ2qCsl9i";
 }

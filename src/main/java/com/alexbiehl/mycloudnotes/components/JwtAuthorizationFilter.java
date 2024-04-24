@@ -34,10 +34,6 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
     @Autowired
     private ObjectMapper objectMapper;
 
-//    public JwtAuthorizationFilter(JwtUtil jwtUtil, ObjectMapper objectMapper) {
-//        this.jwtUtil = jwtUtil;
-//        this.objectMapper = objectMapper;
-//    }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {

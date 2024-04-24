@@ -24,11 +24,11 @@ import java.util.stream.Collectors;
 public class JwtUtil {
 
     public static final String ROLE_CLAIM_ID = "ROLES";
-    private final String TOKEN_HEADER = "Authorization";
+    public static final String TOKEN_HEADER = "Authorization";
 
     // private final JwtParser jwtParser;
-    private final String TOKEN_PREFIX = "Bearer ";
-    private final String ISSUER = "MyCloudNotes";
+    public static final String TOKEN_PREFIX = "Bearer ";
+    public static final String ISSUER = "MyCloudNotes";
     @Value("${jwt.secret.key}")
     private String secretKey;
     @Value("${jwt.token.validity}")
