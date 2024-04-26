@@ -47,4 +47,5 @@ public class UserController {
         return ResponseEntity.ok()
                 .header(HttpHeaders.AUTHORIZATION, token).build();
     }
+
 }
