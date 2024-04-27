@@ -72,7 +72,7 @@ public class UserLoginE2eTest {
 
         mockMvc.perform(
                         post(API.USERS + API.LOGIN_USER)
-                                .with(csrf())
+                                // .with(csrf())
                                 .content(objectMapper.writeValueAsString(userLoginDTO))
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .accept(MediaType.APPLICATION_JSON))
@@ -88,7 +88,7 @@ public class UserLoginE2eTest {
 
         mockMvc.perform(
                 post(API.USERS + API.LOGIN_USER)
-                        .with(csrf())
+                        // .with(csrf())
                         .content(objectMapper.writeValueAsString(userLoginDTO))
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
@@ -102,7 +102,7 @@ public class UserLoginE2eTest {
 
         mockMvc.perform(
                         post(API.USERS + API.LOGIN_USER)
-                                .with(csrf())
+                                // .with(csrf())
                                 .content(objectMapper.writeValueAsString(invalidUser))
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .accept(MediaType.APPLICATION_JSON))

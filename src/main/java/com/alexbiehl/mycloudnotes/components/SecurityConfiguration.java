@@ -81,7 +81,7 @@ public class SecurityConfiguration {
 
                 // exclude CORS pre-flight checks from auth
                 .cors(Customizer.withDefaults())
-                // .csrf(AbstractHttpConfigurer::disable)
+                .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorizationManagerRequestMatcherRegistry ->
                         authorizationManagerRequestMatcherRegistry
                                 .requestMatchers("/users/register", "/users/login").permitAll()
