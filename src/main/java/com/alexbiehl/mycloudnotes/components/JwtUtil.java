@@ -3,13 +3,13 @@ package com.alexbiehl.mycloudnotes.components;
 import com.alexbiehl.mycloudnotes.model.Role;
 import com.alexbiehl.mycloudnotes.model.User;
 import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.HttpServletRequest;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
@@ -25,16 +25,17 @@ public class JwtUtil {
 
     public static final String ROLE_CLAIM_ID = "ROLES";
     public static final String TOKEN_HEADER = "Authorization";
-
     // private final JwtParser jwtParser;
     public static final String TOKEN_PREFIX = "Bearer ";
     public static final String ISSUER = "MyCloudNotes";
+    private static final Logger LOGGER = LoggerFactory.getLogger(JwtUtil.class);
     @Value("${jwt.secret.key}")
     private String secretKey;
     @Value("${jwt.token.validity}")
     private long accessTokenValidity;
 
-    public JwtUtil() {}
+    public JwtUtil() {
+    }
 
     public String createToken(User user) {
         Date tokenCreated = new Date();
@@ -65,30 +66,22 @@ public class JwtUtil {
     }
 
     public Claims resolveClaims(HttpServletRequest request) {
-        try {
-            String token = resolveToken(request);
-            if (token != null) {
-                return parseJwtClaims(token);
-            }
-            return null;
-        } catch (ExpiredJwtException ex) {
-            request.setAttribute("expired", ex.getMessage());
-            throw ex;
-        } catch (Exception ex) {
-            request.setAttribute("invalid", ex.getMessage());
-            throw ex;
+        String token = resolveToken(request);
+        if (token != null) {
+            return parseJwtClaims(token);
         }
+        return null;
     }
 
     public String resolveToken(HttpServletRequest request) {
         String bearerToken = request.getHeader(TOKEN_HEADER);
         if (bearerToken != null && bearerToken.startsWith(TOKEN_PREFIX)) {
-            return bearerToken.substring(TOKEN_PREFIX.length());
+            return bearerToken.substring(TOKEN_PREFIX.length()).trim();
         }
         return null;
     }
 
-    public boolean validateClaims(Claims claims) throws AuthenticationException {
+    public boolean validateClaims(Claims claims) {
         return claims.getExpiration().after(new Date());
     }
 
@@ -107,7 +100,7 @@ public class JwtUtil {
         return claims.getSubject();
     }
 
-    private List<Role> getRoles(Claims claims) {
+    public List<Role> getRoles(Claims claims) {
         return Arrays.stream(claims
                         .get(ROLE_CLAIM_ID)
                         .toString()

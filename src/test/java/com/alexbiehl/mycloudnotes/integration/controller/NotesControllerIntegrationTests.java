@@ -10,6 +10,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 
 import com.alexbiehl.mycloudnotes.api.API;
+import com.alexbiehl.mycloudnotes.components.JwtUtil;
 import com.alexbiehl.mycloudnotes.components.SecurityConfiguration;
 import com.alexbiehl.mycloudnotes.dto.NoteDTO;
 import com.alexbiehl.mycloudnotes.model.User;
@@ -47,6 +48,9 @@ public class NotesControllerIntegrationTests {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private JwtUtil jwtUtil;
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -126,5 +130,38 @@ public class NotesControllerIntegrationTests {
                         .header(HttpHeaders.ORIGIN, "http://localhost:5173"))
                 .andDo(print())
                 .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    public void givenJWT_onPost_andSuccess() throws Exception {
+        User testUser = userRepository.getReferenceById(TestConstants.TEST_USER_ID);
+        final String token = String.format("%s %s", JwtUtil.TOKEN_PREFIX, jwtUtil.createToken(testUser));
+        NoteDTO testNoteDTO = new NoteDTO("JWT Test", "This is a JWT Auth Test.");
+
+        mockMvc.perform(
+                post(API.NOTES)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .header(HttpHeaders.AUTHORIZATION, token)
+                        .content(objectMapper.writeValueAsString(testNoteDTO)))
+                .andDo(print())
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.userId").value(TestConstants.TEST_USER_ID.toString()))
+                .andExpect(jsonPath("$.title").value(testNoteDTO.getTitle()))
+                .andExpect(jsonPath("$.content").value(testNoteDTO.getContent()));
+    }
+
+    @Test
+    public void givenInvalidJwt_onPost_andFail() throws Exception {
+        NoteDTO noteDTO = new NoteDTO("Invalid JWT", "Invalid JWT Test");
+
+        mockMvc.perform(
+                post(API.NOTES)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .header(HttpHeaders.AUTHORIZATION, JwtUtil.TOKEN_PREFIX + "eyJhbGciOiJIUzM4NCIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWUsImlhdCI6MTUxNjIzOTAyMn0.bQTnz6AuMJvmXXQsVPrxeQNvzDkimo7VNXxHeSBfClLufmCVZRUuyTwJF311JHuh")
+                        .content(objectMapper.writeValueAsString(noteDTO)))
+                .andDo(print())
+                .andExpect(status().isBadRequest());
     }
 }

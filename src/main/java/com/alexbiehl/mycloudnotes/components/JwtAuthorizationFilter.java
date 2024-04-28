@@ -1,7 +1,14 @@
 package com.alexbiehl.mycloudnotes.components;
 
+import com.alexbiehl.mycloudnotes.model.Role;
+import com.alexbiehl.mycloudnotes.security.UserDetailsServiceImpl;
+import com.alexbiehl.mycloudnotes.security.UserPrincipal;
+import com.alexbiehl.mycloudnotes.service.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.security.SignatureException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -9,12 +16,15 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -33,42 +43,61 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
     private JwtUtil jwtUtil;
     @Autowired
     private ObjectMapper objectMapper;
+    @Autowired
+    private ApplicationContext applicationContext;
 
+
+    private UserService userService() {
+        return applicationContext.getBean(UserService.class);
+    }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        Map<String, Object> errorDetails = new HashMap<>();
 
-        try {
-            String accessToken = jwtUtil.resolveToken(request);
-            if (accessToken == null) {
-                filterChain.doFilter(request, response);
-                return;
-            }
-            LOGGER.info("Token: " + accessToken);
-            Claims claims = jwtUtil.resolveClaims(request);
-
-            if (claims != null && jwtUtil.validateClaims(claims)) {
-                // retrieve the username
-                String username = claims.getSubject();
-                LOGGER.info("Username: " + username);
-                // retrive the raw claims role string
-                String roleClaims = claims.get(JwtUtil.ROLE_CLAIM_ID).toString();
-                LOGGER.info("Role string: " + roleClaims);
-                // convert the claims string into list of Authorities
-                List<SimpleGrantedAuthority> resolvedRoles = Arrays.stream(roleClaims.split(","))
-                        .map(claimStr -> new SimpleGrantedAuthority(claimStr.split(":")[1])).toList();
-                Authentication authentication =
-                        new UsernamePasswordAuthenticationToken(username, "", resolvedRoles);
-                SecurityContextHolder.getContext().setAuthentication(authentication);
-            }
-        } catch (Exception ex) {
-            errorDetails.put("message", "Authentication error");
-            errorDetails.put("details", ex.getMessage());
-            response.setStatus(HttpStatus.FORBIDDEN.value());
-            response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-            objectMapper.writeValue(response.getWriter(), errorDetails);
+        String accessToken = jwtUtil.resolveToken(request);
+        if (accessToken == null) {
+            filterChain.doFilter(request, response);
+            return;
         }
+
+        Claims claims = null;
+        LOGGER.info("Token: " + accessToken);
+        try {
+            claims = jwtUtil.resolveClaims(request);
+        } catch (SignatureException e) {
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid Signature");
+            return;
+        } catch (MalformedJwtException e) {
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid JWT Format");
+            return;
+        } catch (ExpiredJwtException e) {
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Expired Token");
+            return;
+        }
+
+        if (claims != null && jwtUtil.validateClaims(claims)) {
+            // retrieve the username
+            String username = claims.getSubject();
+            LOGGER.info("Username: " + username);
+            UserPrincipal userPrincipal = new UserPrincipal(userService().getUserByUsername(username));
+            // retrive the raw claims role string
+            List<Role> roles = jwtUtil.getRoles(claims);
+            // convert the list of roles to list of authorities
+            List<SimpleGrantedAuthority> resolvedRoles = roles
+                    .stream()
+                    .map(role -> new SimpleGrantedAuthority(role.getName()))
+                    .toList();
+
+            UsernamePasswordAuthenticationToken authToken =
+                    new UsernamePasswordAuthenticationToken(userPrincipal, userPrincipal.getPassword(), resolvedRoles);
+            authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+
+            SecurityContextHolder.getContext().setAuthentication(authToken);
+        } else {
+            LOGGER.error("Unable to validate claims");
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid or Expired Token");
+        }
+
         filterChain.doFilter(request, response);
     }
 }
