@@ -55,7 +55,7 @@ public class UserLoginE2eTest {
         UserDTO userDTO = new UserDTO(true, "loginTest", UUID.randomUUID());
         mockMvc.perform(
                         post(API.USERS + API.REGISTER_USER)
-                                .with(csrf())
+                                // .with(csrf())
                                 .accept(MediaType.APPLICATION_JSON)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(userDTO)))
@@ -93,7 +93,7 @@ public class UserLoginE2eTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
-                .andExpect(status().isForbidden());
+                .andExpect(status().isUnauthorized());
     }
 
     @Test
@@ -107,7 +107,7 @@ public class UserLoginE2eTest {
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
-                .andExpect(status().isForbidden());
+                .andExpect(status().isUnauthorized());
                 //.andExpect(result -> assertInstanceOf(UsernameNotFoundException.class, result.getResolvedException()))
                 //.andExpect(result -> assertEquals("User invalid_user not found", result.getResolvedException().getMessage()));
     }
