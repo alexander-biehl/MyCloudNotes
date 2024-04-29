@@ -48,7 +48,7 @@ public class UserLoginE2eTest {
     @Autowired
     private UserRepository userRepository;
     @Autowired
-    JwtUtil jwtUtil;
+    private JwtUtil jwtUtil;
 
     @Test
     public void testRegister() throws Exception {
