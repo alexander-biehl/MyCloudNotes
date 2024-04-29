@@ -1,7 +1,6 @@
 package com.alexbiehl.mycloudnotes.components;
 
 import com.alexbiehl.mycloudnotes.model.Role;
-import com.alexbiehl.mycloudnotes.security.UserDetailsServiceImpl;
 import com.alexbiehl.mycloudnotes.security.UserPrincipal;
 import com.alexbiehl.mycloudnotes.service.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -17,22 +16,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @Component
 public class JwtAuthorizationFilter extends OncePerRequestFilter {
@@ -47,6 +39,7 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
     private ApplicationContext applicationContext;
 
 
+    // lazy load UserService bean to prevent circular relationships
     private UserService userService() {
         return applicationContext.getBean(UserService.class);
     }

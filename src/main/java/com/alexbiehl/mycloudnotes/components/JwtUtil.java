@@ -25,10 +25,11 @@ public class JwtUtil {
 
     public static final String ROLE_CLAIM_ID = "ROLES";
     public static final String TOKEN_HEADER = "Authorization";
-    // private final JwtParser jwtParser;
     public static final String TOKEN_PREFIX = "Bearer ";
     public static final String ISSUER = "MyCloudNotes";
+
     private static final Logger LOGGER = LoggerFactory.getLogger(JwtUtil.class);
+
     @Value("${jwt.secret.key}")
     private String secretKey;
     @Value("${jwt.token.validity}")
@@ -38,6 +39,7 @@ public class JwtUtil {
     }
 
     public String createToken(User user) {
+        LOGGER.info("Creating JWT token for user: {}", user.toString());
         Date tokenCreated = new Date();
         Date tokenValidity = new Date(tokenCreated.getTime() + TimeUnit.MINUTES.toMillis(accessTokenValidity));
         return Jwts
@@ -56,7 +58,7 @@ public class JwtUtil {
     }
 
     private Claims parseJwtClaims(final String token) {
-        // return jwtParser.parseSignedClaims(token).getPayload();
+        LOGGER.info("Parse JWT claims from token: {}", token);
         return Jwts
                 .parser()
                 .verifyWith(getSigningKey())
