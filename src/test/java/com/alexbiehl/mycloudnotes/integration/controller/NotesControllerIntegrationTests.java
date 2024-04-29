@@ -61,7 +61,7 @@ public class NotesControllerIntegrationTests {
         final User testUser = userRepository.getReferenceById(TestConstants.TEST_USER_ID);
         mockMvc.perform(
                 get(API.NOTES)
-                        .with(httpBasic("test_user", "password"))
+                        .with(httpBasic(testUser.getUsername(), testUser.getPassword()))
                         .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk())
@@ -84,7 +84,7 @@ public class NotesControllerIntegrationTests {
         final User adminUser = userRepository.getReferenceById(TestConstants.TEST_ADMIN_ID);
         mockMvc.perform(
                 get(API.NOTES)
-                        .with(httpBasic("test_admin", "password"))
+                        .with(httpBasic(adminUser.getUsername(), adminUser.getPassword()))
                         .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk())
@@ -159,6 +159,7 @@ public class NotesControllerIntegrationTests {
                 post(API.NOTES)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
+                        // valid JWT with no signature
                         .header(HttpHeaders.AUTHORIZATION, JwtUtil.TOKEN_PREFIX + "eyJhbGciOiJIUzM4NCIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWUsImlhdCI6MTUxNjIzOTAyMn0.bQTnz6AuMJvmXXQsVPrxeQNvzDkimo7VNXxHeSBfClLufmCVZRUuyTwJF311JHuh")
                         .content(objectMapper.writeValueAsString(noteDTO)))
                 .andDo(print())
