@@ -1,6 +1,7 @@
 package com.alexbiehl.mycloudnotes.integration.repository;
 
 import com.alexbiehl.mycloudnotes.repository.UserRepository;
+import com.alexbiehl.mycloudnotes.utils.TestConstants;
 import com.alexbiehl.mycloudnotes.utils.TestPostgresContainer;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,4 +34,7 @@ public class UserRepositoryIntegrationTests {
     public void testUserExists_AndNo() {
         assertFalse(userRepository.existsByUsername("does_not_exist"));
     }
+
+    @Test
+    public void testAdminExists_andOk() { assertTrue(userRepository.existsById(TestConstants.TEST_ADMIN_ID));}
 }
