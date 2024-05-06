@@ -9,6 +9,7 @@ public class API {
 
     /** Sub-Entity Paths */
     public static final String BY_ID = "/{id}";
+    public static final String BY_USERNAME = "/{username}";
 
     /** User Paths */
     public static final String REGISTER_USER = "/register";

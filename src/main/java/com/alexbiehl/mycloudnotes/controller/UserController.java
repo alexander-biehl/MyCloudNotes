@@ -14,10 +14,9 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.NonNull;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.UUID;
 
 @RestController
 @RequestMapping(API.USERS)
@@ -48,4 +47,17 @@ public class UserController {
                 .header(HttpHeaders.AUTHORIZATION, token).build();
     }
 
+    @GetMapping(API.BY_ID)
+    public UserDTO getUserById(@PathVariable UUID id) {
+        LOGGER.info("GetUserById: {}", id.toString());
+        User user = userService.getUserById(id);
+        return UserDTO.from(user);
+    }
+
+    @GetMapping(API.BY_USERNAME)
+    public UserDTO getUserByUsername(@PathVariable String username) {
+        LOGGER.info("GetUserByUsername: {}", username);
+        User user = userService.getUserByUsername(username);
+        return UserDTO.from(user);
+    }
 }
