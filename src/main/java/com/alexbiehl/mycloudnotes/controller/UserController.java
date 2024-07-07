@@ -39,7 +39,7 @@ public class UserController {
     }
 
     @PostMapping(API.LOGIN_USER)
-    public ResponseEntity login(@RequestBody UserLoginDTO userLogin) {
+    public ResponseEntity loginJWT(@RequestBody UserLoginDTO userLogin) {
         LOGGER.info("Login from: {}", userLogin.toString());
         User validatedUser = userService.validateUserLogin(userLogin);
         final String token = String.format("%s %s", JwtUtil.TOKEN_PREFIX, jwtUtil.createToken(validatedUser));
