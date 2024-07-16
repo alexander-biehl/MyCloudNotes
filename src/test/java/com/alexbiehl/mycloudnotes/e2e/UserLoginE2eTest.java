@@ -78,7 +78,7 @@ public class UserLoginE2eTest {
                                 .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(header().exists(HttpHeaders.AUTHORIZATION));
+                .andExpect(jsonPath("$.accessToken").exists());
     }
 
     @Test
