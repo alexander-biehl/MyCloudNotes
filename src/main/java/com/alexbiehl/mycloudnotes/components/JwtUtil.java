@@ -38,6 +38,12 @@ public class JwtUtil {
     public JwtUtil() {
     }
 
+    /**
+     * Provisions and signs a JWT Token for the specified User.
+     *
+     * @param user - The authenticated User
+     * @return Signed JWT as a string.
+     */
     public String createToken(User user) {
         LOGGER.info("Creating JWT token for user: {}", user.toString());
         Date tokenCreated = new Date();
@@ -57,6 +63,12 @@ public class JwtUtil {
                 .compact();
     }
 
+    /**
+     * Validates that the String token is valid and correctly signed.
+     *
+     * @param token - string representing the raw JWT Token
+     * @return validated JWT Claims
+     */
     private Claims parseJwtClaims(final String token) {
         LOGGER.info("Parse JWT claims from token: {}", token);
         return Jwts
@@ -67,6 +79,12 @@ public class JwtUtil {
                 .getPayload();
     }
 
+    /**
+     * Extracts the Token's Claims from the HttpServletRequest object.
+     *
+     * @param request - HttpServletRequest object
+     * @return the JWT Claims or null
+     */
     public Claims resolveClaims(HttpServletRequest request) {
         String token = resolveToken(request);
         if (token != null) {
@@ -75,6 +93,12 @@ public class JwtUtil {
         return null;
     }
 
+    /**
+     * Extracts the raw JWT string from the {@code HttpServletRequest} request object.
+     *
+     * @param request the HttpServletRequest object
+     * @return the raw jwt token string or null
+     */
     public String resolveToken(HttpServletRequest request) {
         String bearerToken = request.getHeader(TOKEN_HEADER);
         if (bearerToken != null && bearerToken.startsWith(TOKEN_PREFIX)) {
@@ -83,6 +107,13 @@ public class JwtUtil {
         return null;
     }
 
+    /**
+     * Validates that the JWT Claims are still valid. I.E. that the experiation
+     * is after the current date/time.
+     *
+     * @param claims JWT Claims object
+     * @return true if valid, false otherwise
+     */
     public boolean validateClaims(Claims claims) {
         return claims.getExpiration().after(new Date());
     }
@@ -98,10 +129,22 @@ public class JwtUtil {
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
+    /**
+     * Extracts the username from the validated JWT Claims.
+     *
+     * @param claims - The validated JWT Claims
+     * @return the username as a string
+     */
     public String getUsername(Claims claims) {
         return claims.getSubject();
     }
 
+    /**
+     * Parses the list of Roles from the validated JWT Claims object.
+     *
+     * @param claims - the validated JWT Claims
+     * @return List of Role objects.
+     */
     public List<Role> getRoles(Claims claims) {
         return Arrays.stream(claims
                         .get(ROLE_CLAIM_ID)
