@@ -27,8 +27,6 @@ public class UserController {
 
     @Autowired
     private UserService userService;
-    @Autowired
-    private JwtUtil jwtUtil;
 
     @PostMapping(API.REGISTER_USER)
     public UserDTO register(@NonNull @RequestBody UserDTO userDTO, HttpServletResponse response) {
@@ -37,14 +35,6 @@ public class UserController {
         User registeredUser = userService.registerUser(userDTO);
         response.setStatus(HttpStatus.CREATED.value());
         return UserDTO.from(registeredUser);
-    }
-
-    @PostMapping(API.LOGIN_USER)
-    public ResponseEntity<?> loginJWT(@RequestBody UserLoginDTO userLogin) {
-        LOGGER.info("Login from: {}", userLogin.toString());
-        User validatedUser = userService.validateUserLogin(userLogin);
-        final String token = String.format("%s %s", JwtUtil.TOKEN_PREFIX, jwtUtil.createToken(validatedUser));
-        return ResponseEntity.ok(new JwtResponse(token));
     }
 
     @GetMapping(API.BY_ID)

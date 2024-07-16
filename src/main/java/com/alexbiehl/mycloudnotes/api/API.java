@@ -6,6 +6,7 @@ public class API {
     public static final String NOTES = "/notes";
     public static final String ADMIN = "/admin";
     public static final String USERS = "/users";
+    public static final String AUTH = "/auth";
 
     /** Sub-Entity Paths */
     public static final String BY_ID = "/{id}";

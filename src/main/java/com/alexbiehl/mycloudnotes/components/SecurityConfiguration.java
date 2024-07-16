@@ -84,7 +84,7 @@ public class SecurityConfiguration {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorizationManagerRequestMatcherRegistry ->
                         authorizationManagerRequestMatcherRegistry
-                                .requestMatchers("/users/register", "/users/login").permitAll()
+                                .requestMatchers("/users/register", "/auth/login").permitAll()
                                 .requestMatchers("/health-check").permitAll()
                                 .requestMatchers("/admin**").hasAuthority("ROLE_ADMIN")
                                 .anyRequest().authenticated())

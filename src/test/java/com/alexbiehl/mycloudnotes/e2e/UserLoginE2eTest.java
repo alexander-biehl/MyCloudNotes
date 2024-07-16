@@ -71,7 +71,7 @@ public class UserLoginE2eTest {
         UserLoginDTO userLoginDTO = new UserLoginDTO(testUser.getUsername(), TestConstants.PLAIN_TEXT_PASSWORD);
 
         mockMvc.perform(
-                        post(API.USERS + API.LOGIN_USER)
+                        post(API.AUTH + API.LOGIN_USER)
                                 // .with(csrf())
                                 .content(objectMapper.writeValueAsString(userLoginDTO))
                                 .contentType(MediaType.APPLICATION_JSON)
@@ -87,7 +87,7 @@ public class UserLoginE2eTest {
         UserLoginDTO userLoginDTO = new UserLoginDTO(testUser.getUsername(), "an invalid password");
 
         mockMvc.perform(
-                post(API.USERS + API.LOGIN_USER)
+                post(API.AUTH + API.LOGIN_USER)
                         // .with(csrf())
                         .content(objectMapper.writeValueAsString(userLoginDTO))
                         .contentType(MediaType.APPLICATION_JSON)
@@ -101,7 +101,7 @@ public class UserLoginE2eTest {
         UserLoginDTO invalidUser = new UserLoginDTO("invalid_User", "password");
 
         mockMvc.perform(
-                        post(API.USERS + API.LOGIN_USER)
+                        post(API.AUTH + API.LOGIN_USER)
                                 // .with(csrf())
                                 .content(objectMapper.writeValueAsString(invalidUser))
                                 .contentType(MediaType.APPLICATION_JSON)
