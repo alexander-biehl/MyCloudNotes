@@ -40,6 +40,10 @@ public class JwtUtil {
 
     /**
      * Provisions and signs a JWT Token for the specified User.
+     * NOTE: While the JWT this produces is signed it is NOT encrypted. It seems
+     * like this should be fine since the content of the JWT cannot be changed without
+     * invalidating the signature, but it may still allow an attacker to impersonate
+     * the user for the duration of the validity period.
      *
      * @param user - The authenticated User
      * @return Signed JWT as a string.
