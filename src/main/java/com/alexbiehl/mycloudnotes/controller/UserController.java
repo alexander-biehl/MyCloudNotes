@@ -5,6 +5,7 @@ import com.alexbiehl.mycloudnotes.components.JwtUtil;
 import com.alexbiehl.mycloudnotes.dto.UserDTO;
 import com.alexbiehl.mycloudnotes.dto.UserLoginDTO;
 import com.alexbiehl.mycloudnotes.model.User;
+import com.alexbiehl.mycloudnotes.response.JwtResponse;
 import com.alexbiehl.mycloudnotes.service.UserService;
 import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
@@ -39,12 +40,11 @@ public class UserController {
     }
 
     @PostMapping(API.LOGIN_USER)
-    public ResponseEntity loginJWT(@RequestBody UserLoginDTO userLogin) {
+    public ResponseEntity<?> loginJWT(@RequestBody UserLoginDTO userLogin) {
         LOGGER.info("Login from: {}", userLogin.toString());
         User validatedUser = userService.validateUserLogin(userLogin);
         final String token = String.format("%s %s", JwtUtil.TOKEN_PREFIX, jwtUtil.createToken(validatedUser));
-        return ResponseEntity.ok()
-                .header(HttpHeaders.AUTHORIZATION, token).build();
+        return ResponseEntity.ok(new JwtResponse(token));
     }
 
     @GetMapping(API.BY_ID)
