@@ -34,3 +34,12 @@ CREATE TABLE IF NOT EXISTS user_roles (
     role_id uuid REFERENCES roles (id),
     PRIMARY KEY (user_id, role_id)
 );
+
+CREATE TABLE IF NOT EXISTS refresh_tokens (
+    id uuid DEFAULT gen_random_uuid(),
+    user_id uuid REFERENCES users (id),
+    token uuid NOT NULL,
+    expiry_date timestamp NOT NULL,
+    PRIMARY KEY (id)
+);
+CREATE UNIQUE INDEX IF NOT EXISTS refresh_tokens_toke_idx ON refresh_tokens (token);
