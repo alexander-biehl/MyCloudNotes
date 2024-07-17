@@ -1,19 +1,14 @@
 package com.alexbiehl.mycloudnotes.controller;
 
 import com.alexbiehl.mycloudnotes.api.API;
-import com.alexbiehl.mycloudnotes.components.JwtUtil;
 import com.alexbiehl.mycloudnotes.dto.UserDTO;
-import com.alexbiehl.mycloudnotes.dto.UserLoginDTO;
 import com.alexbiehl.mycloudnotes.model.User;
-import com.alexbiehl.mycloudnotes.response.JwtResponse;
 import com.alexbiehl.mycloudnotes.service.UserService;
 import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.lang.NonNull;
 import org.springframework.web.bind.annotation.*;
 
