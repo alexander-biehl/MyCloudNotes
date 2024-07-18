@@ -53,7 +53,7 @@ public class AuthController {
                 .map(RefreshToken::getUser)
                 .map(user -> {
                     String token = jwtUtil.createToken(user);
-                    return ResponseEntity.ok(new TokenRefreshResponse(token, requestRefreshToken));
+                    return ResponseEntity.ok(new TokenRefreshResponse(requestRefreshToken, token));
                 }).orElseThrow(() -> new TokenRefreshException(requestRefreshToken, "Invalid Refresh Token"));
     }
 }

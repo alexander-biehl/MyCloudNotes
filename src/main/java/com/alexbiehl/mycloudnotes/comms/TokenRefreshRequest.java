@@ -2,12 +2,14 @@ package com.alexbiehl.mycloudnotes.comms;
 
 import org.springframework.lang.NonNull;
 
+
 public class TokenRefreshRequest {
 
-    @NonNull
     private String refreshToken;
 
-    public TokenRefreshRequest(final String refreshToken) {
+    public TokenRefreshRequest() {}
+
+    public TokenRefreshRequest(String refreshToken) {
         this.refreshToken = refreshToken;
     }
 
@@ -16,7 +18,7 @@ public class TokenRefreshRequest {
         return refreshToken;
     }
 
-    public void setRefreshToken(@NonNull String refreshToken) {
+    public void setRefreshToken(String refreshToken) {
         this.refreshToken = refreshToken;
     }
 }
