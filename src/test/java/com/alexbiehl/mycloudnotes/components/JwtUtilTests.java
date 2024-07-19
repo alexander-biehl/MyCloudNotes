@@ -2,7 +2,9 @@ package com.alexbiehl.mycloudnotes.components;
 
 import com.alexbiehl.mycloudnotes.model.Role;
 import com.alexbiehl.mycloudnotes.model.User;
+import io.jsonwebtoken.Jwt;
 import io.jsonwebtoken.lang.Collections;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -25,19 +27,22 @@ public class JwtUtilTests {
     @Mock
     private Role testRole;
 
-    @Test
-    public void createJwtUtilTest() {
-        JwtUtil jwtUtil = new JwtUtil();
+    private static JwtUtil jwtUtil;
+
+    @BeforeAll
+    public static void setUp() {
+        jwtUtil = new JwtUtil();
         ReflectionTestUtils.setField(jwtUtil, "secretKey", testKey);
         ReflectionTestUtils.setField(jwtUtil, "accessTokenValidity", tokenValidity);
+    }
+
+    @Test
+    public void createJwtUtilTest() {
         assertNotNull(jwtUtil);
     }
 
     @Test
     public void givenUserWithRole_testCreateToken() {
-        JwtUtil jwtUtil = new JwtUtil();
-        ReflectionTestUtils.setField(jwtUtil, "secretKey", testKey);
-        ReflectionTestUtils.setField(jwtUtil, "accessTokenValidity", tokenValidity);
 
         when(testUser.getUsername()).thenReturn("test_user");
         when(testUser.getRoles()).thenReturn(Collections.setOf(testRole));
