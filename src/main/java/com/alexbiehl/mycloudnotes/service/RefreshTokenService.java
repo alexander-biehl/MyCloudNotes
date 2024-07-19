@@ -1,6 +1,7 @@
 package com.alexbiehl.mycloudnotes.service;
 
 import com.alexbiehl.mycloudnotes.model.RefreshToken;
+import com.alexbiehl.mycloudnotes.model.User;
 import com.alexbiehl.mycloudnotes.repository.RefreshTokenRepository;
 import com.alexbiehl.mycloudnotes.repository.UserRepository;
 import com.alexbiehl.mycloudnotes.comms.exception.TokenRefreshException;
@@ -48,8 +49,11 @@ public class RefreshTokenService {
                     "Refresh token was expired. Please sign in."
             );
         }
+        User user = token.getUser();
+        // delete existing token to prevent reuse and create a new one
+        refreshTokenRepository.deleteByUser(user);
 
-        return token;
+        return createRefreshToken(user.getId());
     }
 
     @Transactional
