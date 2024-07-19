@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.UUID;
 
 @RestController
@@ -52,13 +53,14 @@ public class AuthController {
     public ResponseEntity<?> refreshToken(@RequestBody TokenRefreshRequest tokenRefreshRequest) {
         String requestRefreshToken = tokenRefreshRequest.getRefreshToken();
 
-        return refreshTokenService.findByToken(UUID.fromString(requestRefreshToken))
-                .map(refreshTokenService::verifyExpiration)
-                .map(RefreshToken::getUser)
-                // .map(token -> { return new ArrayList<>() {token, token.getUser()}; })
-                .map(user -> {
-                    String token = jwtUtil.createToken(user);
-                    return ResponseEntity.ok(new TokenRefreshResponse(requestRefreshToken, token));
-                }).orElseThrow(() -> new TokenRefreshException(requestRefreshToken, "Invalid Refresh Token"));
+        try {
+            RefreshToken token = refreshTokenService.findByToken(UUID.fromString(requestRefreshToken)).get();
+            RefreshToken newToken = refreshTokenService.verifyExpiration(token);
+            User user = newToken.getUser();
+            String accessToken = jwtUtil.createToken(user);
+            return ResponseEntity.ok(new TokenRefreshResponse(newToken.getToken().toString(), accessToken));
+        } catch (NoSuchElementException nse) {
+            throw new TokenRefreshException(requestRefreshToken, "Invalid Refresh Token");
+        }
     }
 }
