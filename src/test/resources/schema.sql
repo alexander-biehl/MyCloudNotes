@@ -4,6 +4,12 @@
 -- GRANT ALL PRIVILEGES ON DATABASE mycloudnotes TO notes_user;
 
 
+
+-- CREATE USER notes_user;
+
+-- GRANT ALL PRIVILEGES ON DATABASE mycloudnotes TO notes_user;
+
+
 CREATE TABLE IF NOT EXISTS users (
     id uuid DEFAULT gen_random_uuid(),
     username varchar(50) NOT NULL,
@@ -34,3 +40,12 @@ CREATE TABLE IF NOT EXISTS user_roles (
     role_id uuid REFERENCES roles (id),
     PRIMARY KEY (user_id, role_id)
 );
+
+CREATE TABLE IF NOT EXISTS refresh_tokens (
+    id uuid DEFAULT gen_random_uuid(),
+    user_id uuid REFERENCES users (id),
+    token uuid NOT NULL,
+    expiry_date timestamp NOT NULL,
+    PRIMARY KEY (id)
+);
+CREATE UNIQUE INDEX IF NOT EXISTS refresh_tokens_toke_idx ON refresh_tokens (token);

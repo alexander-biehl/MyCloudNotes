@@ -21,4 +21,6 @@ public class TestConstants {
 
     public static final String PLAIN_TEXT_PASSWORD = "password";
     public static final String ENCRYPTED_PASSWORD = "$2y$11$t2/h9Y3rtugyl0tB56MaFOhCVxZnrY3sa.JRrDsmqAa8lZ2qCsl9i";
+
+    public static final Long REFRESH_TOKEN_EXPIRY_MS = 60000L;
 }

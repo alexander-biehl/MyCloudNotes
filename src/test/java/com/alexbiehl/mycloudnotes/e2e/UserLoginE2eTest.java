@@ -2,12 +2,16 @@ package com.alexbiehl.mycloudnotes.e2e;
 
 import com.alexbiehl.mycloudnotes.MycloudnotesApplication;
 import com.alexbiehl.mycloudnotes.api.API;
+import com.alexbiehl.mycloudnotes.comms.TokenRefreshRequest;
 import com.alexbiehl.mycloudnotes.components.JwtUtil;
 import com.alexbiehl.mycloudnotes.components.SecurityConfiguration;
 import com.alexbiehl.mycloudnotes.dto.UserDTO;
 import com.alexbiehl.mycloudnotes.dto.UserLoginDTO;
+import com.alexbiehl.mycloudnotes.model.RefreshToken;
 import com.alexbiehl.mycloudnotes.model.User;
+import com.alexbiehl.mycloudnotes.repository.RefreshTokenRepository;
 import com.alexbiehl.mycloudnotes.repository.UserRepository;
+import com.alexbiehl.mycloudnotes.service.RefreshTokenService;
 import com.alexbiehl.mycloudnotes.utils.TestConstants;
 import com.alexbiehl.mycloudnotes.utils.TestPostgresContainer;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -25,8 +29,10 @@ import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
+import java.time.Instant;
 import java.util.UUID;
 
+import static com.alexbiehl.mycloudnotes.utils.TestConstants.REFRESH_TOKEN_EXPIRY_MS;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
@@ -50,6 +56,8 @@ public class UserLoginE2eTest {
     private ObjectMapper objectMapper;
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private RefreshTokenRepository refreshTokenRepository;
     @Autowired
     private JwtUtil jwtUtil;
 
@@ -116,5 +124,25 @@ public class UserLoginE2eTest {
                 .andExpect(status().isForbidden())
                 .andExpect(result -> assertInstanceOf(UsernameNotFoundException.class, result.getResolvedException()))
                 .andExpect(result -> assertEquals(String.format("User %s not found", invalidUser.getUsername()), result.getResolvedException().getMessage()));
+    }
+
+    @Test
+    public void validUser_testRefreshToken_andPass() throws Exception {
+        User testUser = userRepository.getReferenceById(TestConstants.TEST_USER_ID);
+
+        RefreshToken refreshToken = new RefreshToken(testUser, UUID.randomUUID(), Instant.now().plusMillis(REFRESH_TOKEN_EXPIRY_MS));
+        refreshToken = refreshTokenRepository.save(refreshToken);
+        TokenRefreshRequest refreshRequest = new TokenRefreshRequest(refreshToken.getToken().toString());
+
+        mockMvc.perform(
+                        post(API.AUTH + API.REFRESH_TOKEN)
+                                // .with(csrf())
+                                .content(objectMapper.writeValueAsString(refreshRequest))
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.accessToken").exists())
+                .andExpect(jsonPath("$.refreshToken").exists());
     }
 }
