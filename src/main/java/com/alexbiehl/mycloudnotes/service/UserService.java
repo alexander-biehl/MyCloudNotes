@@ -2,7 +2,6 @@ package com.alexbiehl.mycloudnotes.service;
 
 import com.alexbiehl.mycloudnotes.dto.UserDTO;
 import com.alexbiehl.mycloudnotes.dto.UserLoginDTO;
-import com.alexbiehl.mycloudnotes.model.Role;
 import com.alexbiehl.mycloudnotes.model.User;
 import com.alexbiehl.mycloudnotes.repository.RoleRepository;
 import com.alexbiehl.mycloudnotes.repository.UserRepository;
