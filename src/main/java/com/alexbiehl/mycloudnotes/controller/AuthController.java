@@ -21,10 +21,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.UUID;
+import java.util.*;
 
 @RestController
 @RequestMapping(API.AUTH)
@@ -52,14 +49,17 @@ public class AuthController {
     @Transactional
     public ResponseEntity<?> refreshToken(@RequestBody TokenRefreshRequest tokenRefreshRequest) {
         String requestRefreshToken = tokenRefreshRequest.getRefreshToken();
+        LOGGER.info("Token Refresh Request for token {}", requestRefreshToken);
 
         try {
             RefreshToken token = refreshTokenService.findByToken(UUID.fromString(requestRefreshToken)).get();
             RefreshToken newToken = refreshTokenService.verifyExpiration(token);
             User user = newToken.getUser();
             String accessToken = jwtUtil.createToken(user);
+            LOGGER.info("Successfully refreshed token for user {} at {}", user.getUsername(), new Date().toString());
             return ResponseEntity.ok(new TokenRefreshResponse(newToken.getToken().toString(), accessToken));
         } catch (NoSuchElementException nse) {
+            LOGGER.error("Unable to locate token for token refresh request {}", requestRefreshToken);
             throw new TokenRefreshException(requestRefreshToken, "Invalid Refresh Token");
         }
     }
