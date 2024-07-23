@@ -66,6 +66,11 @@ public class SecurityConfiguration {
                         .allowedMethods(allowedMethods)
                         .allowedOriginPatterns(allowedOriginPatterns)
                         .exposedHeaders(exposedHeaders);
+                registry.addMapping("/auth/**")
+                        .allowedHeaders(allowedHeaders)
+                        .allowedMethods(allowedMethods)
+                        .allowedOriginPatterns(allowedOriginPatterns)
+                        .exposedHeaders(exposedHeaders);
             }
         };
     }

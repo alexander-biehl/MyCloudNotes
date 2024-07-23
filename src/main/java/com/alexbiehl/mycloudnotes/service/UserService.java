@@ -1,5 +1,6 @@
 package com.alexbiehl.mycloudnotes.service;
 
+import com.alexbiehl.mycloudnotes.comms.UserRegisterRequest;
 import com.alexbiehl.mycloudnotes.dto.UserDTO;
 import com.alexbiehl.mycloudnotes.dto.UserLoginDTO;
 import com.alexbiehl.mycloudnotes.model.User;
@@ -56,12 +57,12 @@ public class UserService {
     }
 
     @Transactional
-    public User registerUser(@NonNull UserDTO user) {
-        User savedUser = userRepository.findByUsername(user.getUsername());
+    public User registerUser(@NonNull UserRegisterRequest userRegisterRequest) {
+        User savedUser = userRepository.findByUsername(userRegisterRequest.getUsername());
         if (savedUser != null) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User already exists");
         }
-        savedUser = User.from(user);
+        savedUser = User.from(userRegisterRequest);
         savedUser.setRoles(Collections.setOf(roleRepository.findByName("USER")));
         return userRepository.save(savedUser);
     }

@@ -1,6 +1,7 @@
 package com.alexbiehl.mycloudnotes.controller;
 
 import com.alexbiehl.mycloudnotes.api.API;
+import com.alexbiehl.mycloudnotes.comms.UserRegisterRequest;
 import com.alexbiehl.mycloudnotes.dto.UserDTO;
 import com.alexbiehl.mycloudnotes.model.User;
 import com.alexbiehl.mycloudnotes.service.UserService;
@@ -24,10 +25,10 @@ public class UserController {
     private UserService userService;
 
     @PostMapping(API.REGISTER_USER)
-    public UserDTO register(@NonNull @RequestBody UserDTO userDTO, HttpServletResponse response) {
-        LOGGER.info("Register request for UserDTO: {}", userDTO);
+    public UserDTO register(@NonNull @RequestBody UserRegisterRequest userRegisterRequest, HttpServletResponse response) {
+        LOGGER.info("Register request for UserDTO: {}", userRegisterRequest);
         // register our user, throws an exception if the username already exists
-        User registeredUser = userService.registerUser(userDTO);
+        User registeredUser = userService.registerUser(userRegisterRequest);
         response.setStatus(HttpStatus.CREATED.value());
         return UserDTO.from(registeredUser);
     }

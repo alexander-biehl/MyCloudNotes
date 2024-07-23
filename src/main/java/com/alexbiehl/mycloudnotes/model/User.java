@@ -1,5 +1,6 @@
 package com.alexbiehl.mycloudnotes.model;
 
+import com.alexbiehl.mycloudnotes.comms.UserRegisterRequest;
 import com.alexbiehl.mycloudnotes.dto.UserDTO;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
@@ -127,5 +128,12 @@ public class User {
 
     public static User from(@NonNull UserDTO userDTO) {
         return new User(userDTO.getId(), userDTO.getUsername(), userDTO.isActive());
+    }
+
+    public static User from(@NonNull UserRegisterRequest userRegisterRequest) {
+        User registeredUser = new User();
+        registeredUser.setUsername(userRegisterRequest.getUsername());
+        registeredUser.setPassword(userRegisterRequest.getPassword());
+        return registeredUser;
     }
 }
