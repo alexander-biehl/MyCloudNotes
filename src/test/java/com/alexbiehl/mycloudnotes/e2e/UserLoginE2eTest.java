@@ -15,7 +15,6 @@ import com.alexbiehl.mycloudnotes.repository.UserRepository;
 import com.alexbiehl.mycloudnotes.utils.TestConstants;
 import com.alexbiehl.mycloudnotes.utils.TestPostgresContainer;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -34,7 +33,8 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static com.alexbiehl.mycloudnotes.utils.TestConstants.REFRESH_TOKEN_EXPIRY_MS;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
