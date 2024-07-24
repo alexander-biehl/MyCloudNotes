@@ -3,6 +3,7 @@ package com.alexbiehl.mycloudnotes.e2e;
 import com.alexbiehl.mycloudnotes.MycloudnotesApplication;
 import com.alexbiehl.mycloudnotes.api.API;
 import com.alexbiehl.mycloudnotes.comms.TokenRefreshRequest;
+import com.alexbiehl.mycloudnotes.comms.UserRegisterRequest;
 import com.alexbiehl.mycloudnotes.comms.exception.TokenRefreshException;
 import com.alexbiehl.mycloudnotes.components.JwtUtil;
 import com.alexbiehl.mycloudnotes.components.SecurityConfiguration;
@@ -62,14 +63,15 @@ public class UserLoginE2eTest {
     private JwtUtil jwtUtil;
 
     @Test
-    public void testRegister() throws Exception {
-        UserDTO userDTO = new UserDTO(true, "loginTest", UUID.randomUUID());
+    public void testRegister() throws Exception{
+        UserRegisterRequest request = new UserRegisterRequest("testUser", "password");
+        UserDTO userDTO = new UserDTO(true, request.getUsername(), UUID.randomUUID());
         mockMvc.perform(
                         post(API.USERS + API.REGISTER_USER)
                                 // .with(csrf())
                                 .accept(MediaType.APPLICATION_JSON)
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .content(objectMapper.writeValueAsString(userDTO)))
+                                .content(objectMapper.writeValueAsString(request)))
                 .andDo(print())
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id").exists())
