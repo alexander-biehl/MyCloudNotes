@@ -46,27 +46,22 @@ public class SecurityConfiguration {
             @SuppressWarnings("null")
             @Override
             public void addCorsMappings(@NonNull final CorsRegistry registry) {
-                registry.addMapping("/notes")
+                registry.addMapping(API.NOTES + "**")
                         .allowedHeaders(allowedHeaders)
                         .allowedMethods(allowedMethods)
                         .allowedOriginPatterns(allowedOriginPatterns)
                         .exposedHeaders(exposedHeaders);
-                registry.addMapping("/notes/**")
+                registry.addMapping(API.HEALTH_CHECK)
                         .allowedHeaders(allowedHeaders)
                         .allowedMethods(allowedMethods)
                         .allowedOriginPatterns(allowedOriginPatterns)
                         .exposedHeaders(exposedHeaders);
-                registry.addMapping("/health-check")
+                registry.addMapping(API.USERS + "**")
                         .allowedHeaders(allowedHeaders)
                         .allowedMethods(allowedMethods)
                         .allowedOriginPatterns(allowedOriginPatterns)
                         .exposedHeaders(exposedHeaders);
-                registry.addMapping("/users**")
-                        .allowedHeaders(allowedHeaders)
-                        .allowedMethods(allowedMethods)
-                        .allowedOriginPatterns(allowedOriginPatterns)
-                        .exposedHeaders(exposedHeaders);
-                registry.addMapping("/auth/**")
+                registry.addMapping(API.AUTH + "**")
                         .allowedHeaders(allowedHeaders)
                         .allowedMethods(allowedMethods)
                         .allowedOriginPatterns(allowedOriginPatterns)
@@ -89,7 +84,11 @@ public class SecurityConfiguration {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorizationManagerRequestMatcherRegistry ->
                         authorizationManagerRequestMatcherRegistry
-                                .requestMatchers("/users/register", "/auth/login", "/auth/refreshtoken").permitAll()
+                                .requestMatchers(
+                                        String.format("%s%s", API.USERS, API.REGISTER_USER),
+                                        String.format("%s%s", API.AUTH, API.LOGIN_USER),
+                                        String.format("%s%s", API.AUTH, API.REFRESH_TOKEN)
+                                ).permitAll()
                                 .requestMatchers("/health-check").permitAll()
                                 .requestMatchers("/admin**").hasAuthority("ROLE_ADMIN")
                                 .anyRequest().authenticated())
