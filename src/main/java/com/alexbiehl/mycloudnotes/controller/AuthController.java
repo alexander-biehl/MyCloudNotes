@@ -1,6 +1,7 @@
 package com.alexbiehl.mycloudnotes.controller;
 
 import com.alexbiehl.mycloudnotes.api.API;
+import com.alexbiehl.mycloudnotes.comms.LoginRequest;
 import com.alexbiehl.mycloudnotes.comms.TokenRefreshRequest;
 import com.alexbiehl.mycloudnotes.comms.TokenRefreshResponse;
 import com.alexbiehl.mycloudnotes.comms.exception.TokenRefreshException;
@@ -15,6 +16,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -35,11 +40,24 @@ public class AuthController {
     private JwtUtil jwtUtil;
     @Autowired
     private RefreshTokenService refreshTokenService;
+    @Autowired
+    private AuthenticationManager authenticationManager;
 
     @PostMapping(API.LOGIN_USER)
-    public ResponseEntity<?> loginJWT(@RequestBody UserLoginDTO userLogin) {
-        LOGGER.info("Login from: {}", userLogin.toString());
-        User validatedUser = userService.validateUserLogin(userLogin);
+    public ResponseEntity<?> loginJWT(@RequestBody LoginRequest loginRequest) {
+        LOGGER.info("Login from: {}", loginRequest.toString());
+
+        User validatedUser = userService.validateUserLogin(loginRequest);
+
+        LOGGER.info("Authenticating user " + loginRequest.getUsername());
+        Authentication authentication = authenticationManager
+                .authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
+        LOGGER.info("Received authentication: " + authentication.getName() +
+                "\nIs authenticated: " + authentication.isAuthenticated());
+        LOGGER.info("Setting security context");
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        LOGGER.info("Security context set");
+
         final String token = jwtUtil.createToken(validatedUser);
         RefreshToken refreshToken = refreshTokenService.createRefreshToken(validatedUser.getId());
         return ResponseEntity.ok(new JwtResponse(token, refreshToken.getToken().toString()));

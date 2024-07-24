@@ -1,5 +1,6 @@
 package com.alexbiehl.mycloudnotes.service;
 
+import com.alexbiehl.mycloudnotes.comms.LoginRequest;
 import com.alexbiehl.mycloudnotes.comms.UserRegisterRequest;
 import com.alexbiehl.mycloudnotes.dto.UserDTO;
 import com.alexbiehl.mycloudnotes.dto.UserLoginDTO;
@@ -40,13 +41,13 @@ public class UserService {
         return userRepository.findByUsername(username);
     }
 
-    public User validateUserLogin(@NonNull UserLoginDTO userLoginDTO) {
-        User user = getUserByUsername(userLoginDTO.getUsername());
+    public User validateUserLogin(@NonNull LoginRequest loginRequest) {
+        User user = getUserByUsername(loginRequest.getUsername());
         if (user == null) {
-            throw new UsernameNotFoundException(String.format("User %s not found", userLoginDTO.getUsername()));
-        } else if (user.getUsername().equals(userLoginDTO.getUsername()) &&
-                !passwordEncoder.matches(userLoginDTO.getPassword(), user.getPassword())) {
-            LOGGER.warn("Password did not match for User: {}", userLoginDTO.getUsername());
+            throw new UsernameNotFoundException(String.format("User %s not found", loginRequest.getUsername()));
+        } else if (user.getUsername().equals(loginRequest.getUsername()) &&
+                !passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
+            LOGGER.warn("Password did not match for User: {}", loginRequest.getUsername());
             throw new UsernameNotFoundException("Username or password did not match");
         }
         return user;
@@ -63,6 +64,7 @@ public class UserService {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User already exists");
         }
         savedUser = User.from(userRegisterRequest);
+        savedUser.setPassword(passwordEncoder.encode(savedUser.getPassword()));
         savedUser.setRoles(Collections.setOf(roleRepository.findByName("USER")));
         return userRepository.save(savedUser);
     }

@@ -19,14 +19,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.alexbiehl.mycloudnotes.api.API;
@@ -80,9 +73,10 @@ public class NotesController {
     }
 
     @GetMapping("")
-    @PostFilter("filterObject.userId == authentication.principal.getId() or hasRole('ADMIN')")
-    public List<NoteDTO> GetNotes() {
+    // @PostFilter("filterObject.userId == authentication.principal.getId() or hasRole('ADMIN')")
+    public List<NoteDTO> GetNotes(Authentication authentication) {
         LOGGER.info("Calling GetNotes");
+        LOGGER.info("auth: " + authentication.getName());
         return notesService.getNotes()
                 .stream()
                 .map(NoteDTO::from)
