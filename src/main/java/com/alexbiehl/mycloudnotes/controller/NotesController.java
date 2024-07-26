@@ -74,7 +74,6 @@ public class NotesController {
     }
 
     @GetMapping("")
-    @PreAuthorize("hasRole('USER')")
     @PostFilter("filterObject.userId == authentication.principal.getId() or hasRole('ADMIN')")
     public List<NoteDTO> GetNotes(Authentication authentication) {
         LOGGER.info("Calling GetNotes");

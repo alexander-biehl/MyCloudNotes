@@ -77,6 +77,7 @@ public class NotesE2eTest {
     }
 
     @Test
+    @Transactional
     public void givenUserNoOriginNoJwt_getNotes_andFail() {
         User testUser = userRepository.getReferenceById(TestConstants.TEST_USER_ID);
 
@@ -118,7 +119,7 @@ public class NotesE2eTest {
         ResponseEntity<String> response = this.restTemplate.exchange(
                 RequestEntity.get(
                                 TestUtils.uri(this.restTemplate, API.NOTES))
-                        .header(HttpHeaders.ORIGIN, "http://localhost:88989")
+                        //.header(HttpHeaders.ORIGIN, "http://localhost:88989")
                         .header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
                         .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                         .build(),
