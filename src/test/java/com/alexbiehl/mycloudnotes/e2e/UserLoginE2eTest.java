@@ -273,6 +273,29 @@ public class UserLoginE2eTest {
 
     @Test
     @Transactional
+    public void noOrigin_register_andFail() throws Exception {
+        User testUser = userRepository.getReferenceById(TestConstants.TEST_USER_ID);
+        UserRegisterRequest registerRequest = new UserRegisterRequest(testUser.getUsername(), TestConstants.PLAIN_TEXT_PASSWORD);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        HttpEntity<UserRegisterRequest> entity = new HttpEntity<>(registerRequest, headers);
+
+        ResponseEntity<String> response = this.restTemplate.postForEntity(
+                TestUtils.uri(this.restTemplate, String.format("%s%s", API.AUTH, API.REGISTER_USER)),
+                entity,
+                String.class
+        );
+
+        LOGGER.info("Response: {}", response);
+
+        assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
+    }
+
+    @Test
+    @Transactional
     public void invalidOrigin_login_andFail() throws Exception {
         User testUser = userRepository.getReferenceById(TestConstants.TEST_USER_ID);
         LoginRequest loginRequest = new LoginRequest(testUser.getUsername(), TestConstants.PLAIN_TEXT_PASSWORD);
@@ -290,5 +313,28 @@ public class UserLoginE2eTest {
         LOGGER.info("Response: {}", response);
 
         assertEquals(HttpStatus.FORBIDDEN, response.getStatusCode());
+    }
+
+    @Test
+    @Transactional
+    public void noOrigin_login_andFail() throws Exception {
+        User testUser = userRepository.getReferenceById(TestConstants.TEST_USER_ID);
+        LoginRequest loginRequest = new LoginRequest(testUser.getUsername(), TestConstants.PLAIN_TEXT_PASSWORD);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        HttpEntity<LoginRequest> entity = new HttpEntity<>(loginRequest, headers);
+
+        ResponseEntity<String> response = this.restTemplate.postForEntity(
+                TestUtils.uri(this.restTemplate, String.format("%s%s", API.AUTH, API.REGISTER_USER)),
+                entity,
+                String.class
+        );
+
+        LOGGER.info("Response: {}", response);
+
+        assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
     }
 }
