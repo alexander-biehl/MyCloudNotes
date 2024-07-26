@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.lang.NonNull;
 import org.springframework.security.access.prepost.PostFilter;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -73,7 +74,8 @@ public class NotesController {
     }
 
     @GetMapping("")
-    // @PostFilter("filterObject.userId == authentication.principal.getId() or hasRole('ADMIN')")
+    @PreAuthorize("hasRole('USER')")
+    @PostFilter("filterObject.userId == authentication.principal.getId() or hasRole('ADMIN')")
     public List<NoteDTO> GetNotes(Authentication authentication) {
         LOGGER.info("Calling GetNotes");
         LOGGER.info("auth: " + authentication.getName());

@@ -10,8 +10,9 @@ import com.alexbiehl.mycloudnotes.utils.TestConstants;
 import com.alexbiehl.mycloudnotes.utils.TestPostgresContainer;
 import com.alexbiehl.mycloudnotes.utils.TestUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -19,6 +20,7 @@ import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.*;
+import org.springframework.transaction.annotation.Transactional;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
@@ -29,8 +31,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @Testcontainers
 @EnableAutoConfiguration
 @Import(SecurityConfiguration.class)
-@Transactional
 public class NotesE2eTest {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(NotesE2eTest.class);
 
     @Container
     private static final PostgreSQLContainer<TestPostgresContainer> container = TestPostgresContainer.getInstance();
@@ -53,6 +56,7 @@ public class NotesE2eTest {
     // searching
 
     @Test
+    @Transactional
     public void givenUser_getNotes_andOk() {
         User testUser = userRepository.getReferenceById(TestConstants.TEST_USER_ID);
         String jwt = String.format("%s %s", JwtUtil.TOKEN_PREFIX, jwtUtil.createToken(testUser));
@@ -89,6 +93,7 @@ public class NotesE2eTest {
     }
 
     @Test
+    @Transactional
     public void givenUserNoOrigin_getNotes_andOk() {
         User testUser = userRepository.getReferenceById(TestConstants.TEST_USER_ID);
         String jwt = String.format("%s %s", JwtUtil.TOKEN_PREFIX, jwtUtil.createToken(testUser));
@@ -110,15 +115,17 @@ public class NotesE2eTest {
     public void givenUserNoJwt_getNotes_andFail() {
         User testUser = userRepository.getReferenceById(TestConstants.TEST_USER_ID);
 
-        ResponseEntity<NoteDTO[]> response = this.restTemplate.exchange(
+        ResponseEntity<String> response = this.restTemplate.exchange(
                 RequestEntity.get(
                                 TestUtils.uri(this.restTemplate, API.NOTES))
                         .header(HttpHeaders.ORIGIN, "http://localhost:88989")
                         .header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
                         .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                         .build(),
-                NoteDTO[].class
+                String.class
         );
+
+        LOGGER.info("response: {}", response.toString());
 
         assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
     }
