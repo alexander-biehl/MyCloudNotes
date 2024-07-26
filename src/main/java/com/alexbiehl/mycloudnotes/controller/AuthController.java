@@ -80,4 +80,10 @@ public class AuthController {
             throw new TokenRefreshException(requestRefreshToken, "Invalid Refresh Token");
         }
     }
+
+//    @PostMapping(API.LOGOUT_USER)
+//    @Transactional
+//    public ResponseEntity<?> logout() {
+//
+//    }
 }

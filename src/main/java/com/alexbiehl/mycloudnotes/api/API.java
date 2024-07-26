@@ -19,6 +19,7 @@ public class API {
     /** Auth paths */
     public static final String LOGIN_USER = "/login";
     public static final String REFRESH_TOKEN = "/refreshtoken";
+    public static final String LOGOUT = "/logout";
 
     /** Utility Paths */
     public static final String HEALTH_CHECK = "/health-check";

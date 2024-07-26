@@ -131,6 +131,7 @@ public class NotesController {
     }
 
     @DeleteMapping(API.BY_ID)
+    @Transactional
     public void deleteNote(@NonNull @PathVariable("id") UUID id) {
         LOGGER.info(String.format("DeleteNote for id: %s", id.toString()));
         if (!notesService.exists(id)) {
