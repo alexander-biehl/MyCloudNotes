@@ -75,9 +75,8 @@ public class NotesController {
 
     @GetMapping("")
     @PostFilter("filterObject.userId == authentication.principal.getId() or hasRole('ADMIN')")
-    public List<NoteDTO> GetNotes(Authentication authentication) {
+    public List<NoteDTO> GetNotes() {
         LOGGER.info("Calling GetNotes");
-        LOGGER.info("auth: " + authentication.getName());
         return notesService.getNotes()
                 .stream()
                 .map(NoteDTO::from)
