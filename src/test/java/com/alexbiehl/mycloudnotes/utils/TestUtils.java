@@ -1,11 +1,19 @@
 package com.alexbiehl.mycloudnotes.utils;
 
 import java.net.URI;
+import java.util.Arrays;
 import java.util.UUID;
 
+import com.alexbiehl.mycloudnotes.api.API;
 import com.alexbiehl.mycloudnotes.model.User;
 import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.lang.NonNull;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class TestUtils {
 
@@ -16,5 +24,18 @@ public class TestUtils {
 
     public static User generateUser() {
         return new User(UUID.randomUUID(), "test", "test", true);
+    }
+
+    public static HttpHeaders headers(String origin) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
+        headers.setOrigin(origin);
+        return headers;
+    }
+
+    public static void assertCodeAndOrigin(ResponseEntity<?> entity, HttpStatus status, String origin) {
+        assertEquals(status, entity.getStatusCode());
+        assertEquals(origin, entity.getHeaders().getAccessControlAllowOrigin());
     }
 }

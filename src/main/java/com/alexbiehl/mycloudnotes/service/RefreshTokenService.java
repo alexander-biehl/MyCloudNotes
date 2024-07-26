@@ -46,7 +46,7 @@ public class RefreshTokenService {
             refreshTokenRepository.delete(token);
             throw new TokenRefreshException(
                     token.getToken().toString(),
-                    "Refresh token was expired. Please sign in."
+                    "Refresh token has expired. Please sign in."
             );
         }
         User user = token.getUser();

@@ -26,7 +26,7 @@ public class UserController {
 
     @PostMapping(API.REGISTER_USER)
     public UserDTO register(@NonNull @RequestBody UserRegisterRequest userRegisterRequest, HttpServletResponse response) {
-        LOGGER.info("Register request for UserDTO: {}", userRegisterRequest);
+        LOGGER.info("Register request for UserDTO: {}", userRegisterRequest.toString());
         // register our user, throws an exception if the username already exists
         User registeredUser = userService.registerUser(userRegisterRequest);
         response.setStatus(HttpStatus.CREATED.value());

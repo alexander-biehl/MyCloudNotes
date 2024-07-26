@@ -1,15 +1,14 @@
 package com.alexbiehl.mycloudnotes.controller;
 
 import com.alexbiehl.mycloudnotes.api.API;
+import com.alexbiehl.mycloudnotes.comms.JwtResponse;
 import com.alexbiehl.mycloudnotes.comms.LoginRequest;
 import com.alexbiehl.mycloudnotes.comms.TokenRefreshRequest;
 import com.alexbiehl.mycloudnotes.comms.TokenRefreshResponse;
 import com.alexbiehl.mycloudnotes.comms.exception.TokenRefreshException;
 import com.alexbiehl.mycloudnotes.components.JwtUtil;
-import com.alexbiehl.mycloudnotes.dto.UserLoginDTO;
 import com.alexbiehl.mycloudnotes.model.RefreshToken;
 import com.alexbiehl.mycloudnotes.model.User;
-import com.alexbiehl.mycloudnotes.comms.JwtResponse;
 import com.alexbiehl.mycloudnotes.service.RefreshTokenService;
 import com.alexbiehl.mycloudnotes.service.UserService;
 import org.slf4j.Logger;
@@ -21,12 +20,11 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import java.util.*;
+import java.util.Date;
+import java.util.NoSuchElementException;
+import java.util.UUID;
 
 @RestController
 @RequestMapping(API.AUTH)
@@ -44,6 +42,7 @@ public class AuthController {
     private AuthenticationManager authenticationManager;
 
     @PostMapping(API.LOGIN_USER)
+    @Transactional
     public ResponseEntity<?> loginJWT(@RequestBody LoginRequest loginRequest) {
         LOGGER.info("Login from: {}", loginRequest.toString());
 
@@ -74,7 +73,7 @@ public class AuthController {
             RefreshToken newToken = refreshTokenService.verifyExpiration(token);
             User user = newToken.getUser();
             String accessToken = jwtUtil.createToken(user);
-            LOGGER.info("Successfully refreshed token for user {} at {}", user.getUsername(), new Date().toString());
+            LOGGER.info("Successfully refreshed token for user {} at {}", user.getUsername(), new Date());
             return ResponseEntity.ok(new TokenRefreshResponse(newToken.getToken().toString(), accessToken));
         } catch (NoSuchElementException nse) {
             LOGGER.error("Unable to locate token for token refresh request {}", requestRefreshToken);

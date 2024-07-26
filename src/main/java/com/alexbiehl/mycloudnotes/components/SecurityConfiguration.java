@@ -79,37 +79,11 @@ public class SecurityConfiguration {
                                 .requestMatchers(
                                         String.format("%s%s", API.USERS, API.REGISTER_USER),
                                         String.format("%s%s", API.AUTH, API.LOGIN_USER),
-                                        String.format("%s%s", API.AUTH, API.REFRESH_TOKEN)
+                                        String.format("%s%s", API.AUTH, API.REFRESH_TOKEN),
+                                        "/health-check"
                                 ).permitAll()
-                                //.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                                .requestMatchers("/health-check").permitAll()
                                 .requestMatchers("/admin**").hasAuthority("ROLE_ADMIN")
                                 .anyRequest().authenticated())
-                // specify basic auth
-                // .httpBasic(Customizer.withDefaults())
-                // enables external login? may not need if we do JWT
-                /*.formLogin((formLogin) -> formLogin.loginPage(frontendHost + "/" + API.LOGIN_USER)
-                        .defaultSuccessUrl(frontendHost)
-                        .permitAll())*/
-                /*.formLogin((new Customizer<FormLoginConfigurer<HttpSecurity>>() {
-                    @Override
-                    public void customize(FormLoginConfigurer<HttpSecurity> httpSecurityFormLoginConfigurer) {
-                        httpSecurityFormLoginConfigurer.loginPage(frontendHost + "/" + API.LOGIN_USER);
-                    }
-                }))*/
-                // enables external logout? may not need if we do JWT
-                /*.logout((logout) -> logout.logoutUrl(API.LOGOUT_USER)
-                        .logoutSuccessUrl(frontendHost + "/" + API.LOGOUT_USER + "?logoutSuccess=true")
-                        .invalidateHttpSession(true)
-                        .deleteCookies("JSESSIONID")
-                        .permitAll())*/
-                /*
-                .logout((new Customizer<LogoutConfigurer<HttpSecurity>>() {
-                    @Override
-                    public void customize(LogoutConfigurer<HttpSecurity> httpSecurityLogoutConfigurer) {
-                        httpSecurityLogoutConfigurer.logoutUrl(frontendHost + "/" + API.LOGOUT_USER);
-                    }
-                }))*/
                 .authenticationProvider(authenticationProvider())
                 .addFilterBefore(jwtFilter(), UsernamePasswordAuthenticationFilter.class);
         return http.build();
