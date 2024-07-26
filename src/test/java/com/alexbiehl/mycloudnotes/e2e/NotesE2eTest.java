@@ -77,7 +77,7 @@ public class NotesE2eTest {
         assertEquals(response.getStatusCode(), HttpStatus.OK);
         assertEquals("http://localhost:89998", response.getHeaders().getAccessControlAllowOrigin());
         assertEquals(1, response.getBody().length);
-        
+
         NoteDTO note = response.getBody()[0];
         assertEquals("title", note.getTitle());
         assertEquals("content", note.getContent());

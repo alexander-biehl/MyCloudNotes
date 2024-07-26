@@ -45,9 +45,9 @@ import static org.junit.jupiter.api.Assertions.*;
 @Testcontainers
 @EnableAutoConfiguration
 @Import(SecurityConfiguration.class)
-public class UserLoginE2eTest {
+public class AuthE2eTests {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(UserLoginE2eTest.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(AuthE2eTests.class);
 
     @Container
     public static PostgreSQLContainer<TestPostgresContainer> postgreSQLContainer = TestPostgresContainer.getInstance();
