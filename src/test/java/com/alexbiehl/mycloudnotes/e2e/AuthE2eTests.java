@@ -177,6 +177,9 @@ public class AuthE2eTests {
         refreshToken = refreshTokenRepository.saveAndFlush(refreshToken);
         TokenRefreshRequest refreshRequest = new TokenRefreshRequest(refreshToken.getToken().toString());
 
+        List<RefreshToken> tokens = refreshTokenRepository.findAll();
+        LOGGER.info("Saved tokens: {}", tokens);
+
         HttpHeaders headers = TestUtils.headers("http://localhost/auth/refreshtoken");
         HttpEntity<TokenRefreshRequest> entity = new HttpEntity<>(refreshRequest, headers);
 

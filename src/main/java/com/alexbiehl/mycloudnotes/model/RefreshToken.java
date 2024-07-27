@@ -90,4 +90,13 @@ public class RefreshToken {
         result = 31 * result + getExpiryDate().hashCode();
         return result;
     }
+
+    @Override
+    public String toString() {
+        return String.format("RefreshToken{id=%s, user_id=%s, token=%s, expiry_date=%s",
+                id.toString(),
+                user.getId().toString(),
+                token.toString(),
+                expiryDate.toString());
+    }
 }
