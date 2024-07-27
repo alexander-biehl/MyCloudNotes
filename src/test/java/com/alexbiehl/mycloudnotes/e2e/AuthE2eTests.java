@@ -28,13 +28,14 @@ import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.*;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.transaction.annotation.Transactional;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.time.Instant;
-import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -45,6 +46,8 @@ import static org.junit.jupiter.api.Assertions.*;
 @Testcontainers
 @EnableAutoConfiguration
 @Import(SecurityConfiguration.class)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
+@Transactional
 public class AuthE2eTests {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AuthE2eTests.class);
@@ -278,7 +281,7 @@ public class AuthE2eTests {
         UserRegisterRequest registerRequest = new UserRegisterRequest(testUser.getUsername(), TestConstants.PLAIN_TEXT_PASSWORD);
 
         HttpHeaders headers = new HttpHeaders();
-        headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
+        headers.setAccept(List.of(MediaType.APPLICATION_JSON));
         headers.setContentType(MediaType.APPLICATION_JSON);
 
         HttpEntity<UserRegisterRequest> entity = new HttpEntity<>(registerRequest, headers);
@@ -322,7 +325,7 @@ public class AuthE2eTests {
         LoginRequest loginRequest = new LoginRequest(testUser.getUsername(), TestConstants.PLAIN_TEXT_PASSWORD);
 
         HttpHeaders headers = new HttpHeaders();
-        headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
+        headers.setAccept(List.of(MediaType.APPLICATION_JSON));
         headers.setContentType(MediaType.APPLICATION_JSON);
 
         HttpEntity<LoginRequest> entity = new HttpEntity<>(loginRequest, headers);

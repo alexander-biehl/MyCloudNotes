@@ -20,7 +20,10 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Date;
 import java.util.NoSuchElementException;
@@ -75,7 +78,8 @@ public class AuthController {
             String accessToken = jwtUtil.createToken(user);
             LOGGER.info("Successfully refreshed token for user {} at {}", user.getUsername(), new Date());
             return ResponseEntity.ok(new TokenRefreshResponse(newToken.getToken().toString(), accessToken));
-        } catch (NoSuchElementException nse) {
+        } catch (
+                NoSuchElementException nse) {
             LOGGER.error("Unable to locate token for token refresh request {}", requestRefreshToken);
             throw new TokenRefreshException(requestRefreshToken, "Invalid Refresh Token");
         }

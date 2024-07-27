@@ -22,11 +22,13 @@ import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.*;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.transaction.annotation.Transactional;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -36,6 +38,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @EnableAutoConfiguration
 @Import(SecurityConfiguration.class)
 @Transactional
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 public class NotesE2eTest {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(NotesE2eTest.class);
@@ -61,21 +64,19 @@ public class NotesE2eTest {
     @Autowired
     private JwtUtil jwtUtil;
 
-    // searching
 
     @Test
-    // @Transactional
     public void givenUser_getNotes_andOk() {
         User testUser = userRepository.getReferenceById(TestConstants.TEST_USER_ID);
         String jwt = String.format("%s %s", JwtUtil.TOKEN_PREFIX, jwtUtil.createToken(testUser));
 
+        List<Note> notes = notesRepository.findAll();
+        LOGGER.info("Existing Notes: {}", notes);
+
         ResponseEntity<NoteDTO[]> response = this.restTemplate.exchange(
                 RequestEntity.get(
                                 TestUtils.uri(this.restTemplate, API.NOTES))
-                        .header(HttpHeaders.ORIGIN, "http://localhost:89998")
-                        .header(HttpHeaders.AUTHORIZATION, jwt)
-                        .header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
-                        .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                        .headers(TestUtils.headers("http://localhost:89998", jwt))
                         .build(),
                 NoteDTO[].class
         );
@@ -93,7 +94,6 @@ public class NotesE2eTest {
     }
 
     @Test
-    // @Transactional
     public void givenUserNoOriginNoJwt_getNotes_andFail() {
         User testUser = userRepository.getReferenceById(TestConstants.TEST_USER_ID);
 
@@ -110,7 +110,6 @@ public class NotesE2eTest {
     }
 
     @Test
-    // @Transactional
     public void givenUserNoOrigin_getNotes_andOk() {
         User testUser = userRepository.getReferenceById(TestConstants.TEST_USER_ID);
         String jwt = String.format("%s %s", JwtUtil.TOKEN_PREFIX, jwtUtil.createToken(testUser));
@@ -148,7 +147,6 @@ public class NotesE2eTest {
     }
 
     @Test
-    // @Transactional
     public void givenUser_getNoteById_andOK() throws Exception {
         User testUser = userRepository.getReferenceById(TestConstants.TEST_USER_ID);
         String authHeader = TestUtils.getBearerToken(jwtUtil.createToken(testUser));
@@ -174,7 +172,6 @@ public class NotesE2eTest {
 
     // creating
     @Test
-    // @Transactional
     public void givenUser_postNote_andOk() throws Exception {
         User testUser = userRepository.getReferenceById(TestConstants.TEST_USER_ID);
         String authToken = TestUtils.getBearerToken(jwtUtil.createToken(testUser));
@@ -201,7 +198,6 @@ public class NotesE2eTest {
 
     // updating
     @Test
-    // @Transactional
     public void givenUser_updateNote_andOk() throws Exception {
         User testUser = userRepository.getReferenceById(TestConstants.TEST_USER_ID);
         String authToken = TestUtils.getBearerToken(jwtUtil.createToken(testUser));
@@ -230,7 +226,6 @@ public class NotesE2eTest {
     // deleting
 
     @Test
-    // @Transactional
     public void givenUserAndNote_delete_andOk() throws Exception {
         User testUser = userRepository.getReferenceById(TestConstants.TEST_USER_ID);
         Note note = notesRepository.getReferenceById(TestConstants.TEST_NOTE_ID);
