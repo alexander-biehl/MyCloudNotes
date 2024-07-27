@@ -1,14 +1,16 @@
 package com.alexbiehl.mycloudnotes.e2e;
 
 import com.alexbiehl.mycloudnotes.api.API;
-import com.alexbiehl.mycloudnotes.comms.*;
+import com.alexbiehl.mycloudnotes.comms.JwtResponse;
+import com.alexbiehl.mycloudnotes.comms.LoginRequest;
+import com.alexbiehl.mycloudnotes.comms.TokenRefreshRequest;
+import com.alexbiehl.mycloudnotes.comms.UserRegisterRequest;
 import com.alexbiehl.mycloudnotes.components.JwtUtil;
 import com.alexbiehl.mycloudnotes.components.SecurityConfiguration;
 import com.alexbiehl.mycloudnotes.controller.advice.ErrorMessage;
 import com.alexbiehl.mycloudnotes.dto.UserDTO;
 import com.alexbiehl.mycloudnotes.dto.UserLoginDTO;
 import com.alexbiehl.mycloudnotes.model.RefreshToken;
-import com.alexbiehl.mycloudnotes.model.Role;
 import com.alexbiehl.mycloudnotes.model.User;
 import com.alexbiehl.mycloudnotes.repository.RefreshTokenRepository;
 import com.alexbiehl.mycloudnotes.repository.RoleRepository;
@@ -374,6 +376,7 @@ public class AuthE2eTests {
     public void invalidUser_logout_andFail() throws Exception {
         User invalidUser = new User(UUID.randomUUID(), "testUser", "password", true);
         invalidUser.setRoles(Set.of(roleRepository.getReferenceById(TestConstants.USER_ROLE_ID)));
+
         HttpHeaders headers = TestUtils.headers(
                 "http://localhost/logout",
                 TestUtils.getBearerToken(jwtUtil.createToken(invalidUser))
