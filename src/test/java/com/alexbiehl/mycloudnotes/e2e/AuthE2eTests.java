@@ -1,18 +1,17 @@
 package com.alexbiehl.mycloudnotes.e2e;
 
 import com.alexbiehl.mycloudnotes.api.API;
-import com.alexbiehl.mycloudnotes.comms.JwtResponse;
-import com.alexbiehl.mycloudnotes.comms.LoginRequest;
-import com.alexbiehl.mycloudnotes.comms.TokenRefreshRequest;
-import com.alexbiehl.mycloudnotes.comms.UserRegisterRequest;
+import com.alexbiehl.mycloudnotes.comms.*;
 import com.alexbiehl.mycloudnotes.components.JwtUtil;
 import com.alexbiehl.mycloudnotes.components.SecurityConfiguration;
 import com.alexbiehl.mycloudnotes.controller.advice.ErrorMessage;
 import com.alexbiehl.mycloudnotes.dto.UserDTO;
 import com.alexbiehl.mycloudnotes.dto.UserLoginDTO;
 import com.alexbiehl.mycloudnotes.model.RefreshToken;
+import com.alexbiehl.mycloudnotes.model.Role;
 import com.alexbiehl.mycloudnotes.model.User;
 import com.alexbiehl.mycloudnotes.repository.RefreshTokenRepository;
+import com.alexbiehl.mycloudnotes.repository.RoleRepository;
 import com.alexbiehl.mycloudnotes.repository.UserRepository;
 import com.alexbiehl.mycloudnotes.utils.TestConstants;
 import com.alexbiehl.mycloudnotes.utils.TestPostgresContainer;
@@ -35,6 +34,7 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -58,6 +58,8 @@ public class AuthE2eTests {
     private UserRepository userRepository;
     @Autowired
     private RefreshTokenRepository refreshTokenRepository;
+    @Autowired
+    private RoleRepository roleRepository;
     @Autowired
     private JwtUtil jwtUtil;
     @Autowired
@@ -94,7 +96,6 @@ public class AuthE2eTests {
     }
 
     @Test
-    @Transactional
     public void givenUser_testLogin_andOk() throws Exception {
         User testUser = userRepository.getReferenceById(TestConstants.TEST_ADMIN_ID);
         UserLoginDTO loginDTO = new UserLoginDTO(testUser.getUsername(), TestConstants.PLAIN_TEXT_PASSWORD);
@@ -119,7 +120,6 @@ public class AuthE2eTests {
     }
 
     @Test
-    @Transactional
     public void givenUserAndInvalidPassword_testLogin_andFail() throws Exception {
         User testUser = userRepository.getReferenceById(TestConstants.TEST_USER_ID);
         UserLoginDTO loginDTO = new UserLoginDTO(testUser.getUsername(), "invalid password");
@@ -246,7 +246,6 @@ public class AuthE2eTests {
     }
 
     @Test
-    @Transactional
     public void invalidOrigin_register_andFail() throws Exception {
         User testUser = userRepository.getReferenceById(TestConstants.TEST_USER_ID);
         UserRegisterRequest registerRequest = new UserRegisterRequest(testUser.getUsername(), TestConstants.PLAIN_TEXT_PASSWORD);
@@ -267,7 +266,6 @@ public class AuthE2eTests {
     }
 
     @Test
-    @Transactional
     public void noOrigin_register_andFail() throws Exception {
         User testUser = userRepository.getReferenceById(TestConstants.TEST_USER_ID);
         UserRegisterRequest registerRequest = new UserRegisterRequest(testUser.getUsername(), TestConstants.PLAIN_TEXT_PASSWORD);
@@ -290,7 +288,6 @@ public class AuthE2eTests {
     }
 
     @Test
-    @Transactional
     public void invalidOrigin_login_andFail() throws Exception {
         User testUser = userRepository.getReferenceById(TestConstants.TEST_USER_ID);
         LoginRequest loginRequest = new LoginRequest(testUser.getUsername(), TestConstants.PLAIN_TEXT_PASSWORD);
@@ -311,7 +308,6 @@ public class AuthE2eTests {
     }
 
     @Test
-    @Transactional
     public void noOrigin_login_andFail() throws Exception {
         User testUser = userRepository.getReferenceById(TestConstants.TEST_USER_ID);
         LoginRequest loginRequest = new LoginRequest(testUser.getUsername(), TestConstants.PLAIN_TEXT_PASSWORD);
@@ -329,6 +325,68 @@ public class AuthE2eTests {
         );
 
         LOGGER.info("Response: {}", response);
+
+        assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
+    }
+
+    @Test
+    public void givenUser_logout_andOk() throws Exception {
+        User testUser = userRepository.getReferenceById(TestConstants.TEST_USER_ID);
+
+        HttpHeaders headers = TestUtils.headers(
+                "http://localhost/logout",
+                TestUtils.getBearerToken(
+                        jwtUtil.createToken(testUser)
+                )
+        );
+        HttpEntity<String> entity = new HttpEntity<>(null, headers);
+
+        ResponseEntity<String> response = this.restTemplate.postForEntity(
+                TestUtils.uri(this.restTemplate, API.AUTH + API.LOGOUT_USER),
+                entity,
+                String.class
+        );
+
+        LOGGER.info("Response: {}", response.toString());
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals("http://localhost/logout", response.getHeaders().getAccessControlAllowOrigin());
+        assertFalse(refreshTokenRepository.existsById(TestConstants.TEST_REFRESH_TOKEN_ID));
+    }
+
+    @Test
+    public void noAuth_logout_andFail() throws Exception {
+        HttpHeaders headers = TestUtils.headers("http://localhost/logout");
+        HttpEntity<String> entity = new HttpEntity<>(null, headers);
+
+        ResponseEntity<String> response = this.restTemplate.postForEntity(
+                TestUtils.uri(this.restTemplate, API.AUTH + API.LOGOUT_USER),
+                entity,
+                String.class
+        );
+
+        LOGGER.info("Response: {}", response.toString());
+
+        assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
+    }
+
+    @Test
+    public void invalidUser_logout_andFail() throws Exception {
+        User invalidUser = new User(UUID.randomUUID(), "testUser", "password", true);
+        invalidUser.setRoles(Set.of(roleRepository.getReferenceById(TestConstants.USER_ROLE_ID)));
+        HttpHeaders headers = TestUtils.headers(
+                "http://localhost/logout",
+                TestUtils.getBearerToken(jwtUtil.createToken(invalidUser))
+        );
+        HttpEntity<String> entity = new HttpEntity<>(null, headers);
+
+        ResponseEntity<String> response = this.restTemplate.postForEntity(
+                TestUtils.uri(this.restTemplate, API.AUTH + API.LOGOUT_USER),
+                entity,
+                String.class
+        );
+
+        LOGGER.info("Response: {}", response.toString());
 
         assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
     }

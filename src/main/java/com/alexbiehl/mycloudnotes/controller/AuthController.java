@@ -1,14 +1,12 @@
 package com.alexbiehl.mycloudnotes.controller;
 
 import com.alexbiehl.mycloudnotes.api.API;
-import com.alexbiehl.mycloudnotes.comms.JwtResponse;
-import com.alexbiehl.mycloudnotes.comms.LoginRequest;
-import com.alexbiehl.mycloudnotes.comms.TokenRefreshRequest;
-import com.alexbiehl.mycloudnotes.comms.TokenRefreshResponse;
+import com.alexbiehl.mycloudnotes.comms.*;
 import com.alexbiehl.mycloudnotes.comms.exception.TokenRefreshException;
 import com.alexbiehl.mycloudnotes.components.JwtUtil;
 import com.alexbiehl.mycloudnotes.model.RefreshToken;
 import com.alexbiehl.mycloudnotes.model.User;
+import com.alexbiehl.mycloudnotes.security.UserPrincipal;
 import com.alexbiehl.mycloudnotes.service.RefreshTokenService;
 import com.alexbiehl.mycloudnotes.service.UserService;
 import org.slf4j.Logger;
@@ -19,6 +17,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -80,9 +79,16 @@ public class AuthController {
         }
     }
 
-//    @PostMapping(API.LOGOUT_USER)
-//    @Transactional
-//    public ResponseEntity<?> logout() {
-//
-//    }
+    @PostMapping(API.LOGOUT_USER)
+    @Transactional
+    public ResponseEntity<ResponseMessage> logout(Authentication authentication) {
+        LOGGER.info("{} called", API.LOGOUT_USER);
+        LOGGER.info("Logging out {}", authentication.getName());
+        // Delete refresh token, perform any other necessary cleanup
+        refreshTokenService.deleteByUserId(
+                ((UserPrincipal) authentication.getPrincipal()).getId()
+        );
+
+        return ResponseEntity.ok(new ResponseMessage("Successfully logged out"));
+    }
 }
