@@ -51,17 +51,13 @@ public class AuthController {
 
         User validatedUser = userService.validateUserLogin(loginRequest);
 
-        LOGGER.info("Authenticating user " + loginRequest.getUsername());
         Authentication authentication = authenticationManager
                 .authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
-        LOGGER.info("Received authentication: " + authentication.getName() +
-                "\nIs authenticated: " + authentication.isAuthenticated());
-        LOGGER.info("Setting security context");
         SecurityContextHolder.getContext().setAuthentication(authentication);
-        LOGGER.info("Security context set");
 
         final String token = jwtUtil.createToken(validatedUser);
         RefreshToken refreshToken = refreshTokenService.createRefreshToken(validatedUser.getId());
+        LOGGER.info("Successfully authenticated user: {}", validatedUser.getUsername());
         return ResponseEntity.ok(new JwtResponse(token, refreshToken.getToken().toString()));
     }
 
