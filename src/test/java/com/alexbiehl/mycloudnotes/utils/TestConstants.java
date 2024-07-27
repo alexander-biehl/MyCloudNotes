@@ -23,4 +23,7 @@ public class TestConstants {
     public static final String ENCRYPTED_PASSWORD = "$2y$11$t2/h9Y3rtugyl0tB56MaFOhCVxZnrY3sa.JRrDsmqAa8lZ2qCsl9i";
 
     public static final Long REFRESH_TOKEN_EXPIRY_MS = 60000L;
+
+    public static final UUID TEST_REFRESH_TOKEN_ID = UUID.fromString("1923a8ba-89db-4bce-83d3-15863ad72311");
+    public static final UUID TEST_EXPIRED_REFRESH_TOKEN_ID = UUID.fromString("00d50d25-3879-4f89-af5b-bac336574bb4");
 }

@@ -72,14 +72,13 @@ public class AuthController {
         LOGGER.info("Token Refresh Request for token {}", requestRefreshToken);
 
         try {
-            RefreshToken token = refreshTokenService.findByToken(UUID.fromString(requestRefreshToken)).get();
+            RefreshToken token = refreshTokenService.findByToken(UUID.fromString(requestRefreshToken));
             RefreshToken newToken = refreshTokenService.verifyExpiration(token);
             User user = newToken.getUser();
             String accessToken = jwtUtil.createToken(user);
             LOGGER.info("Successfully refreshed token for user {} at {}", user.getUsername(), new Date());
             return ResponseEntity.ok(new TokenRefreshResponse(newToken.getToken().toString(), accessToken));
-        } catch (
-                NoSuchElementException nse) {
+        } catch (NoSuchElementException nse) {
             LOGGER.error("Unable to locate token for token refresh request {}", requestRefreshToken);
             throw new TokenRefreshException(requestRefreshToken, "Invalid Refresh Token");
         }

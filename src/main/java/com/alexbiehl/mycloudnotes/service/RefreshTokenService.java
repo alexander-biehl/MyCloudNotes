@@ -1,17 +1,16 @@
 package com.alexbiehl.mycloudnotes.service;
 
+import com.alexbiehl.mycloudnotes.comms.exception.TokenRefreshException;
 import com.alexbiehl.mycloudnotes.model.RefreshToken;
 import com.alexbiehl.mycloudnotes.model.User;
 import com.alexbiehl.mycloudnotes.repository.RefreshTokenRepository;
 import com.alexbiehl.mycloudnotes.repository.UserRepository;
-import com.alexbiehl.mycloudnotes.comms.exception.TokenRefreshException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
-import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -26,8 +25,8 @@ public class RefreshTokenService {
     @Value("${jwt.refresh.token.validity}")
     private Long refreshTokenValidityMS;
 
-    public Optional<RefreshToken> findByToken(UUID token) {
-        return refreshTokenRepository.findByToken(token);
+    public RefreshToken findByToken(UUID token) {
+        return refreshTokenRepository.findByToken(token).get();
     }
 
     public RefreshToken createRefreshToken(UUID userId) {
@@ -52,6 +51,7 @@ public class RefreshTokenService {
         User user = token.getUser();
         // delete existing token to prevent reuse and create a new one
         refreshTokenRepository.deleteByUser(user);
+        refreshTokenRepository.flush();
 
         return createRefreshToken(user.getId());
     }

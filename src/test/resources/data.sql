@@ -17,3 +17,6 @@ INSERT INTO user_roles (user_id, role_id) VALUES ('fd210c53-8e93-46c6-81b4-4c318
 -- create a note for the test user
 INSERT INTO notes (id, user_id, title, content) SELECT '6608cd99-e2f7-4dca-b4dc-9a40a21a25b9', '5c553179-71b1-4c85-842e-b6ff67dc8e61', 'title', 'content' WHERE NOT EXISTS (SELECT * FROM notes WHERE id='6608cd99-e2f7-4dca-b4dc-9a40a21a25b9');
 INSERT INTO notes (id, user_id, title, content) SELECT '6c8ea691-2573-4274-9ac8-f09f0dcaa13a', 'bfd6ada0-2b46-4971-a314-d5abd7b7ebb1', 'admin title', 'admin content' WHERE NOT EXISTS (SELECT * FROM notes WHERE id='6c8ea691-2573-4274-9ac8-f09f0dcaa13a');
+
+INSERT INTO refresh_tokens (id, user_id, token, expiry_date) SELECT '1923a8ba-89db-4bce-83d3-15863ad72311', '5c553179-71b1-4c85-842e-b6ff67dc8e61', '8232ae13-e6de-40fd-b4a3-c48e3a9f40a4', '3000-07-27T21:20:47.206228800Z' WHERE NOT EXISTS (SELECT * FROM refresh_tokens WHERE id='1923a8ba-89db-4bce-83d3-15863ad72311');
+INSERT INTO refresh_tokens (id, user_id, token, expiry_date) SELECT '00d50d25-3879-4f89-af5b-bac336574bb4', 'fd210c53-8e93-46c6-81b4-4c3188568619', '7fd6658d-2d0c-4c86-9e36-85ae92a679aa', '2024-01-01T00:00:00.206228800Z' WHERE NOT EXISTS (SELECT * FROM refresh_tokens WHERE id='00d50d25-3879-4f89-af5b-bac336574bb4');

@@ -34,12 +34,9 @@ import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
-import java.time.Instant;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
-import static com.alexbiehl.mycloudnotes.utils.TestConstants.REFRESH_TOKEN_EXPIRY_MS;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -99,7 +96,7 @@ public class AuthE2eTests {
     @Test
     @Transactional
     public void givenUser_testLogin_andOk() throws Exception {
-        User testUser = userRepository.getReferenceById(TestConstants.TEST_USER_ID);
+        User testUser = userRepository.getReferenceById(TestConstants.TEST_ADMIN_ID);
         UserLoginDTO loginDTO = new UserLoginDTO(testUser.getUsername(), TestConstants.PLAIN_TEXT_PASSWORD);
 
         HttpHeaders headers = TestUtils.headers("http://localhost/auth/login");
@@ -171,10 +168,7 @@ public class AuthE2eTests {
 
     @Test
     public void validUser_testRefreshToken_andPass() throws Exception {
-        User testUser = userRepository.getReferenceById(TestConstants.TEST_USER_ID);
-
-        RefreshToken refreshToken = new RefreshToken(testUser, UUID.randomUUID(), Instant.now().plusMillis(REFRESH_TOKEN_EXPIRY_MS));
-        refreshToken = refreshTokenRepository.saveAndFlush(refreshToken);
+        RefreshToken refreshToken = refreshTokenRepository.getReferenceById(TestConstants.TEST_REFRESH_TOKEN_ID);
         TokenRefreshRequest refreshRequest = new TokenRefreshRequest(refreshToken.getToken().toString());
 
         List<RefreshToken> tokens = refreshTokenRepository.findAll();
@@ -198,15 +192,13 @@ public class AuthE2eTests {
         assertNotNull(jwt.getAccessToken());
         assertNotEquals(refreshToken.getToken().toString(), jwt.getRefreshToken());
         // ensure the old token was deleted
-        assertEquals(refreshTokenRepository.findByToken(refreshToken.getToken()), Optional.empty());
+        assertFalse(refreshTokenRepository.existsById(refreshToken.getId()));
     }
 
     @Test
     public void invalidToken_testRefreshToken_andFail() throws Exception {
-        User testUser = userRepository.getReferenceById(TestConstants.TEST_USER_ID);
-
-        RefreshToken refreshToken = new RefreshToken(testUser, UUID.randomUUID(), Instant.now().plusMillis(REFRESH_TOKEN_EXPIRY_MS));
-        TokenRefreshRequest refreshRequest = new TokenRefreshRequest(refreshToken.getToken().toString());
+        UUID invalidToken = UUID.randomUUID();
+        TokenRefreshRequest refreshRequest = new TokenRefreshRequest(invalidToken.toString());
 
         HttpHeaders headers = TestUtils.headers("http://localhost/auth/refreshtoken");
         HttpEntity<TokenRefreshRequest> entity = new HttpEntity<>(refreshRequest, headers);
@@ -221,19 +213,16 @@ public class AuthE2eTests {
 
         ErrorMessage error = objectMapper.readValue(response.getBody(), ErrorMessage.class);
         assertEquals(
-                String.format("Failed for [%s]: Invalid Refresh Token", refreshToken.getToken().toString()),
+                String.format("Failed for [%s]: Invalid Refresh Token", invalidToken),
                 error.getMessage()
         );
     }
 
     @Test
     public void expiredToken_testRefreshToken_andFail() throws Exception {
-        User testUser = userRepository.getReferenceById(TestConstants.TEST_USER_ID);
-
-        RefreshToken refreshToken = new RefreshToken(testUser, UUID.randomUUID(), Instant.now());
-        refreshToken = refreshTokenRepository.save(refreshToken);
-        TokenRefreshRequest refreshRequest = new TokenRefreshRequest(refreshToken.getToken().toString());
-        final String tokenId = refreshToken.getToken().toString();
+        RefreshToken expiredToken = refreshTokenRepository.getReferenceById(TestConstants.TEST_EXPIRED_REFRESH_TOKEN_ID);
+        TokenRefreshRequest refreshRequest = new TokenRefreshRequest(expiredToken.getToken().toString());
+        final String tokenId = expiredToken.getToken().toString();
 
         HttpHeaders headers = TestUtils.headers("http://localhost/auth/refreshtoken");
         HttpEntity<TokenRefreshRequest> entity = new HttpEntity<>(refreshRequest, headers);
@@ -250,7 +239,7 @@ public class AuthE2eTests {
         assertEquals(
                 String.format(
                         "Failed for [%s]: Refresh token has expired. Please sign in.",
-                        refreshToken.getToken().toString()
+                        expiredToken.getToken().toString()
                 ),
                 error.getMessage()
         );
