@@ -68,7 +68,7 @@ public class NotesE2eTest {
     @Test
     public void givenUser_getNotes_andOk() {
         User testUser = userRepository.getReferenceById(TestConstants.TEST_USER_ID);
-        String jwt = String.format("%s %s", JwtUtil.TOKEN_PREFIX, jwtUtil.createToken(testUser));
+        String jwt = TestUtils.getBearerToken(jwtUtil.createToken(testUser));
 
         List<Note> notes = notesRepository.findAll();
         LOGGER.info("Existing Notes: {}", notes);
@@ -95,8 +95,6 @@ public class NotesE2eTest {
 
     @Test
     public void givenUserNoOriginNoJwt_getNotes_andFail() {
-        User testUser = userRepository.getReferenceById(TestConstants.TEST_USER_ID);
-
         ResponseEntity<NoteDTO[]> response = this.restTemplate.exchange(
                 RequestEntity.get(
                                 TestUtils.uri(this.restTemplate, API.NOTES))
@@ -112,7 +110,7 @@ public class NotesE2eTest {
     @Test
     public void givenUserNoOrigin_getNotes_andOk() {
         User testUser = userRepository.getReferenceById(TestConstants.TEST_USER_ID);
-        String jwt = String.format("%s %s", JwtUtil.TOKEN_PREFIX, jwtUtil.createToken(testUser));
+        String jwt = TestUtils.getBearerToken(jwtUtil.createToken(testUser));
 
         ResponseEntity<NoteDTO[]> response = this.restTemplate.exchange(
                 RequestEntity.get(
@@ -129,8 +127,6 @@ public class NotesE2eTest {
 
     @Test
     public void givenUserNoJwt_getNotes_andFail() {
-        User testUser = userRepository.getReferenceById(TestConstants.TEST_USER_ID);
-
         ResponseEntity<String> response = this.restTemplate.exchange(
                 RequestEntity.get(
                                 TestUtils.uri(this.restTemplate, API.NOTES))
