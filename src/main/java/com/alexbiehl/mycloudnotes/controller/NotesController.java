@@ -1,24 +1,21 @@
 package com.alexbiehl.mycloudnotes.controller;
 
-import java.security.Principal;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
 import com.alexbiehl.mycloudnotes.model.User;
-import com.alexbiehl.mycloudnotes.security.UserPrincipal;
 import com.alexbiehl.mycloudnotes.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;
 import org.springframework.lang.NonNull;
 import org.springframework.security.access.prepost.PostFilter;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
@@ -96,6 +93,7 @@ public class NotesController {
 
     @SuppressWarnings("null")
     @PutMapping(API.BY_ID)
+    @PreAuthorize("hasRole('USER')")
     public NoteDTO updateNote(
             @NonNull @PathVariable("id") UUID id,
             @NonNull @RequestBody NoteDTO updatedNote,
@@ -132,13 +130,21 @@ public class NotesController {
 
     @DeleteMapping(API.BY_ID)
     @Transactional
+    // @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
     public void deleteNote(@NonNull @PathVariable("id") UUID id) {
         LOGGER.info(String.format("DeleteNote for id: %s", id.toString()));
+        LOGGER.info("Notes: {}", notesService.getNotes().toString());
+
         if (!notesService.exists(id)) {
             LOGGER.warn(String.format("DeleteNote for id %s does not exist", id.toString()));
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Unable to find a note with the specified ID");
         }
-        notesService.deleteById(id);
+        deleteNote(notesService.getNoteById(id));
+    }
+
+    @PreAuthorize("#note.userId == authentication.principal.getId() or hasRole('ADMIN')")
+    private void deleteNote(Note note) {
+        notesService.deleteById(note.getId());
     }
 
 }

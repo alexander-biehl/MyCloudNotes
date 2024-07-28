@@ -2,8 +2,7 @@ package com.alexbiehl.mycloudnotes.service;
 
 import com.alexbiehl.mycloudnotes.comms.LoginRequest;
 import com.alexbiehl.mycloudnotes.comms.UserRegisterRequest;
-import com.alexbiehl.mycloudnotes.dto.UserDTO;
-import com.alexbiehl.mycloudnotes.dto.UserLoginDTO;
+import com.alexbiehl.mycloudnotes.comms.exception.UserExistsException;
 import com.alexbiehl.mycloudnotes.model.User;
 import com.alexbiehl.mycloudnotes.repository.RoleRepository;
 import com.alexbiehl.mycloudnotes.repository.UserRepository;
@@ -19,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -78,6 +78,26 @@ public class UserService {
             throw new UsernameNotFoundException(String.format("User ID %s not found.", id));
         } else {
             userRepository.deleteById(id);
+        }
+    }
+
+    public List<User> findAll() {
+        return userRepository.findAll();
+    }
+
+    public User updateUser(User user) {
+        if (!userRepository.existsById(user.getId())) {
+            throw new UsernameNotFoundException(String.format("User ID %s not found.", user.getId().toString()));
+        } else {
+            return userRepository.save(user);
+        }
+    }
+
+    public User save(User user) {
+        if (userRepository.existsById(user.getId())) {
+            throw new UserExistsException(user.getUsername());
+        } else {
+            return userRepository.save(user);
         }
     }
 }

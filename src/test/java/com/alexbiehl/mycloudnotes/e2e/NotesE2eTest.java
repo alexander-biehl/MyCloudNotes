@@ -239,4 +239,7 @@ public class NotesE2eTest {
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(notesRepository.findById(note.getId()), Optional.empty());
     }
+
+    // TODO delete note by non-owning user and fail
+    // TODO delete note by non-owning admin and pass
 }
