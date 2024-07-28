@@ -2,7 +2,6 @@ package com.alexbiehl.mycloudnotes.components;
 
 import com.alexbiehl.mycloudnotes.model.Role;
 import com.alexbiehl.mycloudnotes.model.User;
-import io.jsonwebtoken.Jwt;
 import io.jsonwebtoken.lang.Collections;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -21,13 +20,11 @@ public class JwtUtilTests {
 
     private static final String testKey = "ba4c3cd26cc69e7bd21a739c131b6de4029ab82d25e0f5af98532a00db68b51e";
     private static final long tokenValidity = 60;
-
+    private static JwtUtil jwtUtil;
     @Mock
     private User testUser;
     @Mock
     private Role testRole;
-
-    private static JwtUtil jwtUtil;
 
     @BeforeAll
     public static void setUp() {
