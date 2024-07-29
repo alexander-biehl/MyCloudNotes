@@ -241,5 +241,22 @@ public class NotesE2eTest {
     }
 
     // TODO delete note by non-owning user and fail
+//    @Test
+//    public void givenInvalidUser_delete_andFail() throws Exception {
+//        User testUser2 = userRepository.getReferenceById(TestConstants.TEST_USER2_ID);
+//        Note note = notesRepository.getReferenceById(TestConstants.TEST_NOTE_ID);
+//        String authToken = TestUtils.getBearerToken(jwtUtil.createToken(testUser2));
+//
+//        ResponseEntity<Void> response = this.restTemplate.exchange(
+//                TestUtils.uri(this.restTemplate, API.NOTES + "/" + note.getId().toString()),
+//                HttpMethod.DELETE,
+//                new HttpEntity<>(TestUtils.headers("http://localhost/notes/" + note.getId().toString(), authToken)),
+//                Void.class
+//        );
+//
+//        LOGGER.info("Response: {}", response.toString());
+//
+//        assertEquals(HttpStatus.FORBIDDEN, response.getStatusCode());
+//    }
     // TODO delete note by non-owning admin and pass
 }

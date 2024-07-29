@@ -1,15 +1,15 @@
 package com.alexbiehl.mycloudnotes.controller;
 
-import java.util.List;
-import java.util.UUID;
-import java.util.stream.Collectors;
-
+import com.alexbiehl.mycloudnotes.api.API;
+import com.alexbiehl.mycloudnotes.dto.NoteDTO;
+import com.alexbiehl.mycloudnotes.model.Note;
 import com.alexbiehl.mycloudnotes.model.User;
+import com.alexbiehl.mycloudnotes.service.NotesService;
 import com.alexbiehl.mycloudnotes.service.UserService;
+import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;
 import org.springframework.lang.NonNull;
 import org.springframework.security.access.prepost.PostFilter;
@@ -20,18 +20,15 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
-import com.alexbiehl.mycloudnotes.api.API;
-import com.alexbiehl.mycloudnotes.dto.NoteDTO;
-import com.alexbiehl.mycloudnotes.model.Note;
-import com.alexbiehl.mycloudnotes.service.NotesService;
-
-import jakarta.servlet.http.HttpServletResponse;
+import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping(API.NOTES)
 public class NotesController {
 
-    private static Logger LOGGER = LoggerFactory.getLogger(NotesController.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(NotesController.class);
 
     @Autowired
     private NotesService notesService;
@@ -82,10 +79,10 @@ public class NotesController {
 
     @GetMapping(API.BY_ID)
     public NoteDTO getNoteById(@NonNull @PathVariable("id") UUID id) {
-        LOGGER.info(String.format("Calling GetNoteById with id: %s", id.toString()));
+        LOGGER.info(String.format("Calling GetNoteById with id: %s", id));
         Note note = notesService.getNoteById(id);
         if (note == null) {
-            LOGGER.warn(String.format("Unable to locate Note Object for ID: %s", id.toString()));
+            LOGGER.warn(String.format("Unable to locate Note Object for ID: %s", id));
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Note not found.");
         }
         return NoteDTO.from(note);
@@ -98,7 +95,7 @@ public class NotesController {
             @NonNull @PathVariable("id") UUID id,
             @NonNull @RequestBody NoteDTO updatedNote,
             final HttpServletResponse response) {
-        LOGGER.info(String.format("Calling UpdateNote with id: %s", id.toString()));
+        LOGGER.info(String.format("Calling UpdateNote with id: %s", id));
 
         // get the authenticated user and ensure they are valid
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -130,13 +127,13 @@ public class NotesController {
 
     @DeleteMapping(API.BY_ID)
     @Transactional
-    // @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
     public void deleteNote(@NonNull @PathVariable("id") UUID id) {
-        LOGGER.info(String.format("DeleteNote for id: %s", id.toString()));
+        LOGGER.info(String.format("DeleteNote for id: %s", id));
         LOGGER.info("Notes: {}", notesService.getNotes().toString());
 
         if (!notesService.exists(id)) {
-            LOGGER.warn(String.format("DeleteNote for id %s does not exist", id.toString()));
+            LOGGER.warn(String.format("DeleteNote for id %s does not exist", id));
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Unable to find a note with the specified ID");
         }
         deleteNote(notesService.getNoteById(id));
