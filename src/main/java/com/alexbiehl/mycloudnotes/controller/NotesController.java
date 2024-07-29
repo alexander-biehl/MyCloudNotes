@@ -131,7 +131,11 @@ public class NotesController {
     @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
     public void deleteNote(@NonNull @PathVariable("id") UUID id) {
         LOGGER.info(String.format("DeleteNote for id: %s", id));
-        notesService.deleteById(notesService.getNoteById(id).getId());
+        Note toDelete = notesService.getNoteById(id);
+        if (toDelete == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("Note %s not found", id));
+        }
+        notesService.deleteById(toDelete.getId());
     }
 
 }
