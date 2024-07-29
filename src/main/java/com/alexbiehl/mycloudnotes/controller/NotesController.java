@@ -78,6 +78,7 @@ public class NotesController {
     }
 
     @GetMapping(API.BY_ID)
+    @PreAuthorize("hasRole('USER')")
     public NoteDTO getNoteById(@NonNull @PathVariable("id") UUID id) {
         LOGGER.info(String.format("Calling GetNoteById with id: %s", id));
         Note note = notesService.getNoteById(id);
@@ -130,18 +131,7 @@ public class NotesController {
     @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
     public void deleteNote(@NonNull @PathVariable("id") UUID id) {
         LOGGER.info(String.format("DeleteNote for id: %s", id));
-        LOGGER.info("Notes: {}", notesService.getNotes().toString());
-
-        if (!notesService.exists(id)) {
-            LOGGER.warn(String.format("DeleteNote for id %s does not exist", id));
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Unable to find a note with the specified ID");
-        }
-        deleteNote(notesService.getNoteById(id));
-    }
-
-    @PreAuthorize("#note.userId == authentication.principal.getId() or hasRole('ADMIN')")
-    private void deleteNote(Note note) {
-        notesService.deleteById(note.getId());
+        notesService.deleteById(notesService.getNoteById(id).getId());
     }
 
 }
