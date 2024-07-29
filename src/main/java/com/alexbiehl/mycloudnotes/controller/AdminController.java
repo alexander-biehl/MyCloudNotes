@@ -11,7 +11,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping(API.ADMIN)
 public class AdminController {
 
-    private static Logger LOGGER = LoggerFactory.getLogger(AdminController.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(AdminController.class);
+
     @GetMapping("")
     public boolean adminHome() {
         LOGGER.info("admin home says hi");
