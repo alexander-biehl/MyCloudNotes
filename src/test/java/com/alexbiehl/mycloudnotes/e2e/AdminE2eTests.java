@@ -67,4 +67,21 @@ public class AdminE2eTests {
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
     }
+
+    @Test
+    public void givenUser_test_andFail() throws Exception {
+        User testUser = userRepository.getReferenceById(TestConstants.TEST_USER_ID);
+        String authToken = TestUtils.getBearerToken(jwtUtil.createToken(testUser));
+
+        ResponseEntity<Boolean> response = this.restTemplate.exchange(
+                RequestEntity.get(TestUtils.uri(this.restTemplate, API.ADMIN))
+                        .headers(TestUtils.headers("http://localhost/admin", authToken))
+                        .build(),
+                Boolean.class
+        );
+
+        LOGGER.info("Response: {}", response.toString());
+
+        assertEquals(HttpStatus.FORBIDDEN, response.getStatusCode());
+    }
 }
