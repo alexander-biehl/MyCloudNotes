@@ -219,8 +219,6 @@ public class NotesE2eTest {
         assertNotNull(response.getBody().getId());
     }
 
-    // deleting
-
     @Test
     public void givenUserAndNote_delete_andOk() throws Exception {
         User testUser = userRepository.getReferenceById(TestConstants.TEST_USER_ID);
@@ -240,7 +238,6 @@ public class NotesE2eTest {
         assertEquals(notesRepository.findById(note.getId()), Optional.empty());
     }
 
-    // TODO delete note by non-owning user and fail
     @Test
     public void givenInvalidUser_delete_andFail() throws Exception {
         User testUser2 = userRepository.getReferenceById(TestConstants.TEST_USER2_ID);
@@ -258,5 +255,22 @@ public class NotesE2eTest {
 
         assertEquals(HttpStatus.FORBIDDEN, response.getStatusCode());
     }
-    // TODO delete note by non-owning admin and pass
+
+    @Test
+    public void givenAdmin_delete_andOk() throws Exception {
+        User testAdmin = userRepository.getReferenceById(TestConstants.TEST_ADMIN_ID);
+        Note userNote = notesRepository.getReferenceById(TestConstants.TEST_NOTE_ID);
+        String authToken = TestUtils.getBearerToken(jwtUtil.createToken(testAdmin));
+
+        ResponseEntity<Void> response = this.restTemplate.exchange(
+                TestUtils.uri(this.restTemplate, API.NOTES + "/" + userNote.getId().toString()),
+                HttpMethod.DELETE,
+                new HttpEntity<>(TestUtils.headers("http://localhost/notes/" + userNote.getId().toString(), authToken)),
+                Void.class
+        );
+
+        LOGGER.info("Response: {}", response.toString());
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+    }
 }
